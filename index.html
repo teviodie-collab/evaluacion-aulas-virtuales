@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Plataforma de evaluación institucional de aulas virtuales" />
+  <title>Evaluación de Aulas Virtuales</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell header-grid">
+      <div>
+        <p class="eyebrow">Aseguramiento de calidad · Aulas virtuales</p>
+        <h1>Plataforma de evaluación de aulas virtuales</h1>
+        <p class="lead">Grilla institucional ponderada para revisar diseño pedagógico, accesibilidad, usabilidad, analítica, soporte, seguridad, gobernanza y cumplimiento legal.</p>
+      </div>
+      <aside class="summary-card" aria-live="polite">
+        <span class="summary-label">Resultado actual</span>
+        <strong id="headerScore">0 / 100</strong>
+        <span id="headerStatus">Sin calcular</span>
+      </aside>
+    </div>
+  </header>
+
+  <main class="shell layout">
+    <nav class="sidebar" aria-label="Navegación de la evaluación">
+      <a href="#datos">Datos del aula</a>
+      <a href="#rubrica">Rúbrica</a>
+      <a href="#resultados">Resultados</a>
+      <a href="#historial">Historial local</a>
+      <a href="#guia">Guía de uso</a>
+    </nav>
+
+    <section class="content-stack">
+      <section id="datos" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Paso 1</p>
+            <h2>Datos de identificación</h2>
+          </div>
+          <button type="button" class="ghost" id="newEvaluationBtn">Nueva evaluación</button>
+        </div>
+
+        <form id="evaluationForm" novalidate>
+          <div class="form-grid">
+            <label>
+              Evaluador/a o equipo
+              <input id="evaluator" name="evaluator" type="text" autocomplete="name" required placeholder="Nombre completo" />
+            </label>
+            <label>
+              Fecha de evaluación
+              <input id="date" name="date" type="date" required />
+            </label>
+            <label>
+              Unidad académica / Facultad
+              <input id="faculty" name="faculty" type="text" required placeholder="Ej.: Facultad de Derecho" />
+            </label>
+            <label>
+              Carrera / programa
+              <select id="program" name="program" required></select>
+            </label>
+            <label>
+              Asignatura / aula virtual
+              <select id="course" name="course" required></select>
+            </label>
+            <label>
+              Docente responsable
+              <input id="teacher" name="teacher" type="text" placeholder="Nombre del/la docente" />
+            </label>
+            <label>
+              Modalidad
+              <select id="modality" name="modality">
+                <option value="Presencial con apoyo virtual">Presencial con apoyo virtual</option>
+                <option value="Híbrida">Híbrida</option>
+                <option value="Virtual">Virtual</option>
+                <option value="A distancia">A distancia</option>
+              </select>
+            </label>
+            <label>
+              LMS / plataforma
+              <select id="lms" name="lms">
+                <option value="Moodle">Moodle</option>
+                <option value="Canvas">Canvas</option>
+                <option value="Google Classroom">Google Classroom</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </label>
+            <label class="wide">
+              URL del aula o enlace de referencia
+              <input id="courseUrl" name="courseUrl" type="url" placeholder="https://..." />
+            </label>
+            <label class="wide">
+              Observaciones generales
+              <textarea id="generalNotes" name="generalNotes" rows="3" placeholder="Contexto de la evaluación, cohorte, particularidades del aula, etc."></textarea>
+            </label>
+          </div>
+
+          <div class="notice">
+            <input id="telemetry" name="telemetry" type="checkbox" />
+            <label for="telemetry"><strong>Validación por telemetría LMS.</strong> Marcar cuando la evaluación fue contrastada con reportes de actividad, configuración técnica, analíticas, logs o evidencias del entorno virtual.</label>
+          </div>
+        </form>
+      </section>
+
+      <section id="rubrica" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Paso 2</p>
+            <h2>Grilla de evaluación</h2>
+          </div>
+          <div class="mini-score"><span id="answeredCount">0</span>/<span id="totalCount">0</span> dimensiones completas</div>
+        </div>
+
+        <div class="scale-help">
+          <span><strong>0</strong> Inexistente</span>
+          <span><strong>1</strong> Incipiente</span>
+          <span><strong>2</strong> Mínimo aceptable</span>
+          <span><strong>3</strong> Sólido</span>
+          <span><strong>4</strong> Excelente</span>
+        </div>
+
+        <div id="rubricContainer" class="rubric-stack"></div>
+      </section>
+
+      <section id="resultados" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Paso 3</p>
+            <h2>Resultados y plan de mejora</h2>
+          </div>
+          <div class="button-row">
+            <button type="button" id="calculateBtn">Calcular</button>
+            <button type="button" class="secondary" id="saveBtn">Guardar</button>
+          </div>
+        </div>
+
+        <div id="resultBox" class="result-box empty">
+          Completá la grilla y presioná “Calcular”.
+        </div>
+
+        <div class="button-row wrap">
+          <button type="button" class="secondary" id="exportJsonBtn">Exportar evaluación JSON</button>
+          <button type="button" class="secondary" id="exportCsvBtn">Exportar historial CSV</button>
+          <button type="button" class="secondary" id="copySummaryBtn">Copiar informe breve</button>
+          <button type="button" class="secondary" id="printBtn">Imprimir / guardar PDF</button>
+        </div>
+      </section>
+
+      <section id="historial" class="panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Registro local</p>
+            <h2>Evaluaciones guardadas en este navegador</h2>
+          </div>
+          <button type="button" class="danger ghost" id="clearHistoryBtn">Borrar historial</button>
+        </div>
+        <p class="muted">Esta versión no usa servidor: guarda los datos en <em>localStorage</em>. Para una facultad completa conviene conectar Firebase, Supabase o una base institucional.</p>
+        <div id="historyList" class="history-list"></div>
+      </section>
+
+      <section id="guia" class="panel guide">
+        <p class="eyebrow">Notas de implementación</p>
+        <h2>Cómo leer esta versión</h2>
+        <p>Esta app toma como base la propuesta de una grilla única de 10 dimensiones con escala 0–4, pesos diferenciados, evidencias mixtas y umbrales institucionales. Sirve como prototipo funcional para GitHub Pages.</p>
+        <ul>
+          <li><strong>Aprobada:</strong> 70 puntos o más, sin dimensiones críticas por debajo del mínimo.</li>
+          <li><strong>Condicionada:</strong> entre 55 y 69 puntos, o 70+ con problemas de umbral.</li>
+          <li><strong>Crítica:</strong> menos de 55 puntos.</li>
+          <li><strong>Umbral no negociable:</strong> accesibilidad, seguridad y cumplimiento legal requieren al menos 2/4.</li>
+        </ul>
+      </section>
+    </section>
+  </main>
+
+  <footer class="site-footer shell">
+    <p>Prototipo institucional · Evaluación de aulas virtuales · GitHub Pages</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
