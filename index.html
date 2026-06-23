@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Plataforma de evaluación institucional de aulas virtuales" />
-  <title>Evaluación de Aulas Virtuales</title>
+  <meta name="description" content="Plataforma de evaluación de aulas virtuales en Moodle de la Facultad de Derecho de la UNCUYO" />
+  <title>Plataforma de evaluación de aulas virtuales en Moodle de la Facultad de Derecho de la UNCUYO</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="site-header">
     <div class="shell header-grid">
       <div>
-        <p class="eyebrow">Aseguramiento de calidad · Aulas virtuales</p>
-        <h1>Plataforma de evaluación de aulas virtuales</h1>
-        <p class="lead">Grilla institucional ponderada para revisar diseño pedagógico, accesibilidad, usabilidad, analítica, soporte, seguridad, gobernanza y cumplimiento legal.</p>
+        <h1>Plataforma de evaluación de aulas virtuales en Moodle de la Facultad de Derecho de la UNCUYO</h1>
       </div>
       <aside class="summary-card" aria-live="polite">
         <span class="summary-label">Resultado actual</span>
@@ -26,7 +27,7 @@
   <main class="shell layout">
     <nav class="sidebar" aria-label="Navegación de la evaluación">
       <a href="#datos">Datos del aula</a>
-      <a href="#rubrica">Rúbrica</a>
+      <a href="#rubrica">Grilla</a>
       <a href="#resultados">Resultados</a>
       <a href="#historial">Historial local</a>
       <a href="#guia">Guía de uso</a>
@@ -45,7 +46,7 @@
         <form id="evaluationForm" novalidate>
           <div class="form-grid">
             <label>
-              Evaluador/a o equipo
+              Evaluador/a
               <input id="evaluator" name="evaluator" type="text" autocomplete="name" required placeholder="Nombre completo" />
             </label>
             <label>
@@ -53,38 +54,24 @@
               <input id="date" name="date" type="date" required />
             </label>
             <label>
-              Unidad académica / Facultad
-              <input id="faculty" name="faculty" type="text" required placeholder="Ej.: Facultad de Derecho" />
-            </label>
-            <label>
-              Carrera / programa
+              Carrera / oferta académica
               <select id="program" name="program" required></select>
             </label>
             <label>
-              Asignatura / aula virtual
+              <span id="courseLabel">Cátedra</span>
               <select id="course" name="course" required></select>
-            </label>
-            <label>
-              Docente responsable
-              <input id="teacher" name="teacher" type="text" placeholder="Nombre del/la docente" />
             </label>
             <label>
               Modalidad
               <select id="modality" name="modality">
-                <option value="Presencial con apoyo virtual">Presencial con apoyo virtual</option>
+                <option value="Presencial con complementos virtuales">Presencial con complementos virtuales</option>
                 <option value="Híbrida">Híbrida</option>
-                <option value="Virtual">Virtual</option>
                 <option value="A distancia">A distancia</option>
               </select>
             </label>
             <label>
-              LMS / plataforma
-              <select id="lms" name="lms">
-                <option value="Moodle">Moodle</option>
-                <option value="Canvas">Canvas</option>
-                <option value="Google Classroom">Google Classroom</option>
-                <option value="Otro">Otro</option>
-              </select>
+              Último acceso / revisión del aula
+              <input id="lastAccess" name="lastAccess" type="date" />
             </label>
             <label class="wide">
               URL del aula o enlace de referencia
@@ -92,13 +79,8 @@
             </label>
             <label class="wide">
               Observaciones generales
-              <textarea id="generalNotes" name="generalNotes" rows="3" placeholder="Contexto de la evaluación, cohorte, particularidades del aula, etc."></textarea>
+              <textarea id="generalNotes" name="generalNotes" rows="3" placeholder="Contexto de la evaluación, cohorte, particularidades del aula, fuentes consultadas, etc."></textarea>
             </label>
-          </div>
-
-          <div class="notice">
-            <input id="telemetry" name="telemetry" type="checkbox" />
-            <label for="telemetry"><strong>Validación por telemetría LMS.</strong> Marcar cuando la evaluación fue contrastada con reportes de actividad, configuración técnica, analíticas, logs o evidencias del entorno virtual.</label>
           </div>
         </form>
       </section>
@@ -107,17 +89,22 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">Paso 2</p>
-            <h2>Grilla de evaluación</h2>
+            <h2>Grilla de evaluación por descriptores</h2>
           </div>
-          <div class="mini-score"><span id="answeredCount">0</span>/<span id="totalCount">0</span> dimensiones completas</div>
+          <div class="mini-score"><span id="answeredCount">0</span>/<span id="totalCount">0</span> descriptores respondidos</div>
         </div>
 
         <div class="scale-help">
-          <span><strong>0</strong> Inexistente</span>
-          <span><strong>1</strong> Incipiente</span>
-          <span><strong>2</strong> Mínimo aceptable</span>
-          <span><strong>3</strong> Sólido</span>
-          <span><strong>4</strong> Excelente</span>
+          <span><strong>1</strong> Nada</span>
+          <span><strong>2</strong> Poco</span>
+          <span><strong>3</strong> Neutro</span>
+          <span><strong>4</strong> Mucho</span>
+          <span><strong>5</strong> Totalmente</span>
+          <span><strong>NA</strong> No aplica</span>
+        </div>
+
+        <div class="hint-box">
+          La puntuación global se calcula sobre los descriptores respondidos. Las opciones <strong>NA</strong> no suman ni restan. La dimensión Accesibilidad se marca como prioritaria si queda por debajo del mínimo institucional.
         </div>
 
         <div id="rubricContainer" class="rubric-stack"></div>
@@ -155,26 +142,26 @@
           </div>
           <button type="button" class="danger ghost" id="clearHistoryBtn">Borrar historial</button>
         </div>
-        <p class="muted">Esta versión no usa servidor: guarda los datos en <em>localStorage</em>. Para una facultad completa conviene conectar Firebase, Supabase o una base institucional.</p>
+        <p class="muted">Esta versión no usa servidor: guarda los datos en <em>localStorage</em>. Para una facultad completa conviene conectar Firebase, Supabase, Google Sheets o una base institucional.</p>
         <div id="historyList" class="history-list"></div>
       </section>
 
       <section id="guia" class="panel guide">
         <p class="eyebrow">Notas de implementación</p>
         <h2>Cómo leer esta versión</h2>
-        <p>Esta app toma como base la propuesta de una grilla única de 10 dimensiones con escala 0–4, pesos diferenciados, evidencias mixtas y umbrales institucionales. Sirve como prototipo funcional para GitHub Pages.</p>
+        <p>Esta app convierte la grilla institucional en una evaluación por descriptores. Cada criterio se responde con la escala Nada, Poco, Neutro, Mucho, Totalmente o NA.</p>
         <ul>
-          <li><strong>Aprobada:</strong> 70 puntos o más, sin dimensiones críticas por debajo del mínimo.</li>
-          <li><strong>Condicionada:</strong> entre 55 y 69 puntos, o 70+ con problemas de umbral.</li>
+          <li><strong>Aprobada:</strong> 70 puntos o más, sin accesibilidad crítica.</li>
+          <li><strong>Condicionada:</strong> entre 55 y 69 puntos, o 70+ con accesibilidad por debajo del mínimo.</li>
           <li><strong>Crítica:</strong> menos de 55 puntos.</li>
-          <li><strong>Umbral no negociable:</strong> accesibilidad, seguridad y cumplimiento legal requieren al menos 2/4.</li>
+          <li><strong>Prioridades:</strong> el sistema ordena automáticamente las dimensiones con menor desempeño.</li>
         </ul>
       </section>
     </section>
   </main>
 
   <footer class="site-footer shell">
-    <p>Prototipo institucional · Evaluación de aulas virtuales · GitHub Pages</p>
+    <p>Facultad de Derecho · UNCUYO · Plataforma de evaluación de aulas virtuales en Moodle</p>
   </footer>
 
   <script src="data.js"></script>

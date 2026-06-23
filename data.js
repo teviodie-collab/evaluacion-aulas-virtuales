@@ -1,55 +1,167 @@
 /*
-  Editar este archivo para adaptar carreras, aulas y rúbrica.
-  La suma de pesos de RUBRIC debe ser 100.
+  Plataforma de evaluación de aulas virtuales en Moodle
+  Facultad de Derecho · UNCUYO
+
+  Esta versión incorpora la grilla por descriptores del instrumento institucional:
+  escala 1 Nada, 2 Poco, 3 Neutro, 4 Mucho, 5 Totalmente, NA No aplica.
 */
 
 window.APP_CONFIG = {
-  institutionName: "Facultad",
-  storageKey: "evaluaciones-aulas-virtuales-v1",
-  decisionRules: {
+  institutionName: "Facultad de Derecho de la UNCUYO",
+  siteName: "Plataforma de evaluación de aulas virtuales en Moodle de la Facultad de Derecho de la UNCUYO",
+  storageKey: "evaluaciones-aulas-virtuales-derecho-uncuyo-v3",
+  thresholds: {
     approved: 70,
     conditional: 55,
-    gateMinimum: 2,
-    gateDimensions: ["accesibilidad", "seguridad"]
+    dimensionCritical: 50,
+    accessibilityMinimum: 50
   },
+  scale: [
+    { value: "1", label: "Nada", help: "No se observa cumplimiento del descriptor." },
+    { value: "2", label: "Poco", help: "Cumplimiento incipiente, parcial o débil." },
+    { value: "3", label: "Neutro", help: "Cumplimiento medio, aceptable pero no consolidado." },
+    { value: "4", label: "Mucho", help: "Cumplimiento alto y consistente." },
+    { value: "5", label: "Totalmente", help: "Cumplimiento pleno, claro y verificable." },
+    { value: "NA", label: "NA", help: "No aplica al aula evaluada; no suma ni resta." }
+  ],
   programs: {
-    "abogacia": {
-      label: "Carrera de Abogacía",
+    abogacia: {
+      label: "Abogacía",
+      courseLabel: "Cátedra",
+      placeholder: "-- Seleccionar cátedra --",
       courses: [
         "Introducción a la Filosofía",
         "Problemática del Conocimiento",
         "Introducción al Derecho",
         "Derecho Romano",
+        "Historia de las Instituciones Argentinas y Latinoamericanas",
+        "Derecho Político",
+        "Derecho Civil",
+        "Inglés I",
+        "Derecho Penal Parte General I",
+        "Derecho Constitucional",
+        "Principios de la Economía",
+        "Derecho de las Obligaciones I",
+        "Inglés II",
+        "Práctica Profesional Supervisada I",
+        "Derecho Penal Parte General II",
+        "Finanzas Públicas y Derecho Tributario",
+        "Derecho de las Obligaciones II",
+        "Derecho del Consumidor y Defensa de la Competencia",
+        "Inglés III",
+        "Práctica Profesional Supervisada II",
+        "Derecho Penal Parte Especial I",
+        "Derecho Comercial y Societario I",
+        "Contratos Civiles y Comerciales I",
+        "Sociología del Derecho",
+        "Práctica Profesional Supervisada III",
+        "Derecho Penal Parte Especial II",
+        "Derecho Comercial y Societario II",
+        "Contratos Civiles y Comerciales II",
+        "Filosofía del Derecho",
+        "Mediación I",
+        "Práctica Profesional Supervisada IV",
+        "Derechos Reales I",
+        "Títulos Valores",
+        "Derecho del Trabajo y la Seguridad Social",
+        "Derecho Procesal Civil y Comercial. Parte General",
+        "Mediación II",
+        "Práctica Profesional Supervisada V",
+        "Derechos Reales II",
+        "Derecho Procesal Civil y Comercial. Parte Especial",
+        "Derecho Concursal",
         "Derecho de las Familias",
-        "Derecho Internacional Público",
+        "Derechos Humanos",
+        "Metodología de la Investigación I",
+        "Práctica Profesional Supervisada VI",
+        "Derecho Sucesorio",
+        "Derecho Administrativo I",
+        "Derecho Procesal Penal I",
+        "Derecho Internacional Público y de la Integración",
+        "Mediación III",
         "Práctica Profesional Supervisada VII",
-        "Práctica Profesional Supervisada VIII"
+        "Derecho Administrativo II",
+        "Derecho Procesal Penal II",
+        "Derecho de los Recursos Naturales, Aguas y Protección del Medio Ambiente",
+        "Derecho Internacional Privado",
+        "Metodología de la Investigación II",
+        "Práctica Profesional Supervisada VIII",
+        "--- Espacios Curriculares Optativos ---",
+        "Derecho Público Provincial y Municipal",
+        "Derecho de la Salud y Responsabilidad Médica",
+        "Criminología",
+        "Derecho del Transporte",
+        "Derecho Electoral",
+        "Derecho del Deporte",
+        "Inteligencia Criminal y Crimen Organizado",
+        "Derecho Aeronáutico",
+        "Derecho Aduanero",
+        "Derecho Procesal Constitucional",
+        "Derecho Informático",
+        "Análisis Económico del Derecho",
+        "Derecho Bancario, Bursátil y Seguros",
+        "Propiedad Horizontal y Conjuntos Inmobiliarios",
+        "Derecho Penal Económico",
+        "Procedimientos y Procesos Administrativos Especiales",
+        "Empresa Familiar",
+        "Integración Regional",
+        "Derecho de los Negocios Internacionales",
+        "Derecho Notarial y Registral"
       ]
     },
-    "tecnicatura": {
-      label: "Tecnicatura Univ. en Administración de Edificios",
+    tecnicatura: {
+      label: "Tecnicatura Universitaria en Administración de Edificios de Propiedad Horizontal y Conjuntos Inmobiliarios",
+      courseLabel: "Cátedra",
+      placeholder: "-- Seleccionar cátedra --",
       courses: [
         "Introducción a la Comunicación",
-        "Fundamentos del Derecho I",
+        "Ética Profesional",
+        "Inglés I",
         "Manejo de Utilitarios PC",
-        "Mediación, Negociación y Resolución de Conflictos"
+        "Introducciones Contables I",
+        "Fundamentos del Derecho I",
+        "Higiene y Seguridad",
+        "Práctica Profesional I",
+        "Problemática de la Comunicación",
+        "Psicología Social",
+        "Inglés II",
+        "Introducciones Contables II",
+        "Fundamentos del Derecho II",
+        "Estructura Edilicia",
+        "Práctica Profesional II",
+        "Mediación, Negociación y Resolución de Conflictos",
+        "Comercio Vinculado a la Administración Edilicia",
+        "Liquidación de Sueldos y Seguridad Social",
+        "Obligaciones, Familia y Sucesiones",
+        "Derechos Reales y Registral",
+        "Propiedad Horizontal",
+        "Comportamiento Organizacional",
+        "Práctica Profesional III",
+        "Rendición de Cuentas y Régimen Impositivo",
+        "Ordenamiento Territorial, Ingeniería y Arquitectura",
+        "Diseño y Proyectos Inmobiliarios",
+        "Contratos",
+        "Derecho Laboral",
+        "Conjuntos Inmobiliarios",
+        "Práctica Profesional IV",
+        "Proyecto Final"
       ]
     },
-    "posgrado": {
-      label: "Posgrado / Diplomaturas",
+    posgrado: {
+      label: "Oferta de posgrado",
+      courseLabel: "Oferta de posgrado",
+      placeholder: "-- Seleccionar oferta de posgrado --",
       courses: [
-        "Seminario de posgrado",
-        "Diplomatura",
-        "Curso de actualización",
-        "Taller virtual"
-      ]
-    },
-    "generica": {
-      label: "Otra carrera o espacio curricular",
-      courses: [
-        "Aula virtual 1",
-        "Aula virtual 2",
-        "Aula virtual 3"
+        "Doctorado en Derecho",
+        "Maestría en Derecho de las Familias",
+        "Maestría en Magistratura y Gestión Judicial",
+        "Maestría en Derecho del Trabajo",
+        "Maestría en Derecho Penal",
+        "Maestría en Derecho Administrativo",
+        "Diplomatura de Posgrado en Derechos de las Personas con Discapacidad",
+        "Diplomatura de Posgrado en Docencia del Derecho",
+        "Diplomatura de posgrado en Mediación y gestión participativa de conflictos",
+        "Formación Básica en Mediación homologada por el Ministerio de Justicia y Derechos Humanos de la Nación"
       ]
     }
   }
@@ -57,205 +169,130 @@ window.APP_CONFIG = {
 
 window.RUBRIC = [
   {
-    id: "pedagogica",
-    title: "Diseño pedagógico, comunicación y alineamiento",
-    weight: 20,
-    description: "Evalúa si el aula permite comprender qué se aprende, cómo se aprende, cómo se comunica y cómo se sostiene la presencia docente.",
-    indicators: [
-      "Resultados de aprendizaje o propósitos formativos visibles.",
-      "Relación explícita entre objetivos, contenidos, actividades y evaluación.",
-      "Actividades formativas distribuidas durante el cursado.",
-      "Criterios de evaluación, rúbricas o pautas disponibles para estudiantes.",
-      "Presencia docente, canales de consulta y comunicación periódica."
-    ],
-    scale: [
-      "No hay diseño reconocible; el aula funciona como depósito de archivos y sin comunicación clara.",
-      "Hay organización mínima, pero objetivos, actividades y evaluación aparecen desarticulados.",
-      "Cumple mínimos: estructura, objetivos y criterios básicos visibles.",
-      "Presenta una secuencia consistente, con actividades y feedback adecuados.",
-      "Diseño sólido, explícito, comunicativo, coherente y basado en evidencia de mejora."
-    ]
-  },
-  {
-    id: "tecnica",
-    title: "Funcionamiento técnico del aula",
-    weight: 10,
-    description: "Revisa estabilidad, enlaces, disponibilidad y compatibilidad de recursos.",
-    indicators: [
-      "El aula está visible y correctamente configurada.",
-      "No hay enlaces rotos en recursos centrales.",
-      "Los archivos, videos, cuestionarios y tareas abren sin errores.",
-      "El diseño se visualiza correctamente en celular y computadora.",
-      "La estructura no depende de recursos externos inestables."
-    ],
-    scale: [
-      "El aula presenta errores graves o inaccesibilidad técnica.",
-      "Funciona parcialmente, con errores frecuentes o recursos caídos.",
-      "Funciona de manera aceptable, aunque requiere ajustes puntuales.",
-      "Funciona bien y mantiene una estructura estable.",
-      "Funcionamiento robusto, documentado y validado con pruebas técnicas."
-    ]
-  },
-  {
-    id: "accesibilidad",
-    title: "Accesibilidad, inclusión y DUA",
-    weight: 12,
-    gate: true,
-    description: "Dimensión de umbral: ningún aula debería aprobar si presenta barreras graves no remediadas.",
-    indicators: [
-      "Imágenes relevantes con texto alternativo.",
-      "Videos con subtítulos, transcripción o alternativa equivalente.",
-      "Documentos principales legibles y accesibles.",
-      "Contraste, jerarquía visual y navegación comprensibles.",
-      "Opciones o apoyos para trayectorias diversas."
-    ],
-    scale: [
-      "Barreras graves de acceso sin alternativas.",
-      "Accesibilidad tratada de forma ocasional o reactiva.",
-      "Cumple mínimos básicos de accesibilidad.",
-      "Presenta criterios inclusivos consistentes y evidencias de revisión.",
-      "Diseño universal integrado, con alternativas, validación y mejora continua."
-    ]
-  },
-  {
-    id: "usabilidad",
-    title: "Usabilidad y experiencia de navegación",
-    weight: 8,
-    description: "Evalúa si el estudiantado puede orientarse sin sobrecarga ni confusión.",
-    indicators: [
-      "Portada o bloque inicial con orientación clara.",
-      "Menú, secciones y nombres de módulos consistentes.",
-      "Calendario, entregas y tareas fáciles de encontrar.",
-      "Carga cognitiva razonable: no hay exceso de elementos dispersos.",
-      "Uso de plantilla o patrón común institucional."
-    ],
-    scale: [
-      "Navegación confusa; no se localizan recursos o tareas centrales.",
-      "Organización irregular; depende de instrucciones externas.",
-      "Navegación aceptable, aunque con mejoras necesarias.",
-      "Experiencia clara, consistente y previsible.",
-      "Experiencia altamente cuidada, probada con usuarios y fácil de replicar."
+    id: "objetivos",
+    number: "1",
+    title: "Objetivos, competencias y coherencia didáctica",
+    description: "Revisa si el aula explicita la propuesta pedagógica, los objetivos/competencias y la organización temporal, y si existe alineación entre esos elementos.",
+    items: [
+      { code: "1.1", text: "En el inicio del aula virtual se comparte un programa, guía didáctica u hoja de ruta con la propuesta pedagógica." },
+      { code: "1.2", text: "Los objetivos de aprendizaje o competencias se expresan con claridad y están escritos desde la perspectiva de los estudiantes." },
+      { code: "1.3", text: "Se indica el tiempo estimado de aprendizaje y/u organización temporal, incluyendo la modalidad de cursado presencial y/o virtual." },
+      { code: "1.4", text: "Existe coherencia o alineación entre objetivos/competencias, actividades, evaluación y recursos digitales utilizados." }
     ]
   },
   {
     id: "evaluacion",
-    title: "Evaluación y retroalimentación",
-    weight: 10,
-    description: "Revisa criterios, instrumentos, feedback, trazabilidad y evaluación formativa.",
-    indicators: [
-      "Actividades evaluables configuradas correctamente.",
-      "Criterios, consignas y fechas visibles.",
-      "Uso de rúbricas o guías de evaluación.",
-      "Feedback formativo antes de instancias de alto impacto.",
-      "Registro claro de calificaciones y devoluciones."
-    ],
-    scale: [
-      "Evaluación opaca, tardía o sólo numérica.",
-      "Hay evaluación, pero con criterios incompletos o baja trazabilidad.",
-      "Cumple mínimos de consignas, fechas y calificaciones.",
-      "Evaluación consistente, con rúbricas y feedback útil.",
-      "Evaluación formativa, transparente, trazable y orientada a la mejora."
+    number: "2",
+    title: "Evaluación",
+    description: "Analiza la relación entre propuesta curricular, criterios, instrumentos de evaluación y formas de retroalimentación.",
+    items: [
+      { code: "2.1", text: "Hay coherencia entre el formato curricular, la propuesta de evaluación y el desarrollo de contenidos/actividades a lo largo del cursado." },
+      { code: "2.2", text: "Se establecen claramente los criterios de evaluación de las actividades propuestas y las formas de retroalimentación." },
+      { code: "2.3", text: "Se proponen diferentes instrumentos de evaluación, por ejemplo cuestionarios, portafolios, producciones u otros." }
     ]
   },
   {
-    id: "analitica",
-    title: "Analítica de aprendizaje y uso de datos",
-    weight: 8,
-    description: "Evalúa si se usan datos del LMS para acompañar y mejorar, con criterios responsables.",
-    indicators: [
-      "Revisión de participación, accesos o avance.",
-      "Identificación temprana de estudiantes con baja actividad.",
-      "Uso de reportes para ajustar enseñanza o soporte.",
-      "Criterios transparentes sobre qué datos se usan y para qué.",
-      "Registro de intervenciones o alertas."
-    ],
-    scale: [
-      "No se revisan datos ni reportes de actividad.",
-      "Uso ocasional de datos, sin criterio documentado.",
-      "Se revisan métricas básicas de actividad.",
-      "La analítica informa decisiones de acompañamiento y mejora.",
-      "Uso sistemático, ético y documentado de analíticas para mejorar trayectorias."
+    id: "tecnologias",
+    number: "3",
+    title: "Tecnologías digitales",
+    description: "Revisa la pertinencia de las herramientas digitales para sostener objetivos, participación, comunicación y colaboración.",
+    items: [
+      { code: "3.1", text: "Las tecnologías digitales utilizadas en el curso son pertinentes y funcionales a los objetivos de aprendizaje o competencias." },
+      { code: "3.2", text: "Las tecnologías digitales utilizadas apoyan la participación de los estudiantes y el aprendizaje activo." },
+      { code: "3.3", text: "Se utilizan recursos digitales que favorecen la comunicación." },
+      { code: "3.4", text: "Se utilizan recursos digitales que favorecen el trabajo colaborativo." }
     ]
   },
   {
-    id: "interoperabilidad",
-    title: "Interoperabilidad y recursos digitales",
-    weight: 8,
-    description: "Revisa integración de herramientas, recursos externos y reutilización de materiales.",
-    indicators: [
-      "Herramientas externas integradas de manera segura.",
-      "Recursos con licencias o autoría claras.",
-      "Materiales reutilizables, actualizables y bien organizados.",
-      "Integración con calificaciones o seguimiento cuando corresponde.",
-      "Evita duplicaciones innecesarias entre plataformas."
-    ],
-    scale: [
-      "Recursos dispersos, sin licencias ni integración confiable.",
-      "Integraciones o recursos externos usados sin criterios claros.",
-      "Cumple mínimos de organización y licenciamiento.",
-      "Integraciones pertinentes, estables y pedagógicamente justificadas.",
-      "Ecosistema interoperable, seguro, reusable y documentado."
+    id: "usabilidad",
+    number: "4",
+    title: "Usabilidad",
+    description: "Evalúa si el aula resulta navegable, clara, estable y sin obstáculos innecesarios para encontrar contenidos y actividades.",
+    items: [
+      { code: "4.1", text: "Es fácil navegar y se encuentran rápidamente los contenidos buscados." },
+      { code: "4.2", text: "La interfaz cuenta con un diseño implícito que informa cómo interactuar, o existen instrucciones de uso claras." },
+      { code: "4.3", text: "Todos los enlaces funcionan correctamente; no hay enlaces rotos o que conduzcan a contenido erróneo." },
+      { code: "4.4", text: "La navegación es sencilla, con mínimo número de clics y de efectos distractores." }
     ]
   },
   {
-    id: "soporte",
-    title: "Soporte, documentación y acompañamiento",
-    weight: 8,
-    description: "Evalúa si docentes y estudiantes tienen ayuda suficiente para usar el aula.",
-    indicators: [
-      "Guía inicial o tutorial para estudiantes.",
-      "Información de contacto o mesa de ayuda.",
-      "Orientaciones para entrega de tareas, participación y evaluación.",
-      "Documentación docente para sostener el aula.",
-      "Registro de problemas frecuentes y soluciones."
-    ],
-    scale: [
-      "No hay soporte ni orientación visible.",
-      "Ayuda informal, dispersa o dependiente de consultas individuales.",
-      "Soporte básico disponible para problemas frecuentes.",
-      "Acompañamiento claro, documentado y accesible.",
-      "Sistema de soporte integrado, medible y orientado a mejora continua."
+    id: "mediacion_materiales",
+    number: "5",
+    title: "Mediación de materiales",
+    description: "Observa claridad, atractivo, completitud de consignas y respeto de propiedad intelectual en los materiales disponibles.",
+    items: [
+      { code: "5.1", text: "La presentación del contenido es clara; se localizan rápidamente los apartados e ideas que se exponen." },
+      { code: "5.2", text: "Los contenidos se presentan de forma atractiva o innovadora, por ejemplo infografías, audios, videos u otros recursos." },
+      { code: "5.3", text: "Las consignas están bien formuladas y permiten responder qué, para qué, cómo, con qué, quiénes, dónde y cuándo." },
+      { code: "5.4", text: "El contenido respeta los derechos de propiedad intelectual cuando utiliza otras fuentes." }
     ]
   },
   {
-    id: "seguridad",
-    title: "Seguridad, privacidad y cumplimiento legal",
-    weight: 8,
+    id: "reflexion_innovacion",
+    number: "6",
+    title: "Capacidad de generar reflexión, crítica e innovación",
+    description: "Revisa si las actividades promueven aprendizaje significativo, comprensión, colaboración, producción, metodologías activas y pensamiento crítico.",
+    items: [
+      { code: "6.1", text: "Se promueve el aprendizaje significativo: es clara la relación entre lo ya aprendido y los nuevos conocimientos." },
+      { code: "6.2", text: "Se proponen actividades para el acceso y comprensión de la información, como lectura, búsqueda o exploración guiada." },
+      { code: "6.3", text: "Se proponen actividades para construir colaborativamente." },
+      { code: "6.4", text: "Se proponen actividades que permiten visualizar o expresar lo comprendido mediante producción y publicación de información." },
+      { code: "6.5", text: "Se proponen metodologías activas, como resolución de proyectos, problemas, casos o ejercicios." },
+      { code: "6.6", text: "Las actividades estimulan la reflexión, la capacidad crítica y la creación de nuevas ideas, procedimientos, métodos o técnicas." }
+    ]
+  },
+  {
+    id: "interactividad_adaptabilidad",
+    number: "7",
+    title: "Interactividad y adaptabilidad",
+    description: "Evalúa si el contenido y las actividades ofrecen interacción, alternativas o recorridos diferenciados según acciones, niveles o posibilidades de cursado.",
+    items: [
+      { code: "7.1", text: "La presentación del contenido no es estática, sino que depende del uso que haga el estudiante." },
+      { code: "7.2", text: "Se proponen diferentes actividades o itinerarios según niveles de conocimiento, posibilidades de cursado o capacidades de aprendizaje." },
+      { code: "7.3", text: "El aula facilita que el estudiante controle y maneje su aprendizaje, eligiendo contenido o actividad siguiente según su respuesta o recorrido previo." }
+    ]
+  },
+  {
+    id: "autonomia",
+    number: "8",
+    title: "Promoción del aprendizaje autónomo",
+    description: "Revisa si la claridad de la propuesta favorece el trabajo autónomo y su vinculación con el entorno profesional o social.",
+    items: [
+      { code: "8.1", text: "La claridad de la propuesta facilita el trabajo autónomo por parte del estudiante." },
+      { code: "8.2", text: "Existe relación entre lo aprendido y el entorno profesional y/o social de los estudiantes." }
+    ]
+  },
+  {
+    id: "formato_diseno",
+    number: "9",
+    title: "Formato y diseño",
+    description: "Evalúa variedad de formatos, adecuación estética y calidad de textos, imágenes y audios.",
+    items: [
+      { code: "9.1", text: "Se utilizan formatos multimodales —texto, imagen, audio, video— para aprovechar diferentes formas de aprendizaje." },
+      { code: "9.2", text: "El aula es estéticamente adecuada para el estudio y la reflexión; no tiene exceso de colores, audios o videos que distraigan." },
+      { code: "9.3", text: "Los textos, imágenes y audios son de buena calidad." }
+    ]
+  },
+  {
+    id: "accesibilidad",
+    number: "10",
+    title: "Accesibilidad",
     gate: true,
-    description: "Dimensión de umbral: verifica roles, permisos, datos personales, derechos de uso, herramientas externas y resguardo de evaluaciones.",
-    indicators: [
-      "Roles y permisos revisados.",
-      "No se exponen datos personales innecesarios.",
-      "Materiales con derechos, licencias o citas claras.",
-      "Uso seguro y transparente de IA o herramientas externas si aplica.",
-      "Resguardo de entregas, evaluaciones y protocolos frente a incidentes."
-    ],
-    scale: [
-      "Riesgos graves de exposición de datos, permisos, licencias o incumplimiento legal.",
-      "Controles débiles, informales o no documentados.",
-      "Cumple mínimos de privacidad, permisos, licencias y resguardo.",
-      "Seguridad y cumplimiento revisados y coherentes con el uso del aula.",
-      "Seguridad, privacidad y cumplimiento documentados, auditados y trazables."
+    description: "Dimensión de atención prioritaria: observa adaptación a personas con discapacidad, accesibilidad web y accesibilidad de contenidos multimedia.",
+    items: [
+      { code: "10.1", text: "El material está adaptado a personas con discapacidad visual, auditiva o motora." },
+      { code: "10.2", text: "Cumple criterios de accesibilidad web y criterios de accesibilidad de contenidos multimedia." },
+      { code: "10.3", text: "El curso proporciona textos e imágenes accesibles en archivos, documentos, páginas LMS y páginas web para diversos estudiantes." }
     ]
   },
   {
-    id: "gobernanza",
-    title: "Gobernanza y mejora continua",
-    weight: 8,
-    description: "Mide si la evaluación se convierte en decisiones y mejoras concretas.",
-    indicators: [
-      "Responsables del aula identificados.",
-      "Registro de cambios o mejoras realizadas.",
-      "Plan de mejora con responsables y plazos.",
-      "Evidencias de seguimiento institucional.",
-      "Criterios comunes con otras aulas de la facultad."
-    ],
-    scale: [
-      "No hay responsables ni plan de mejora.",
-      "Mejoras aisladas, sin registro ni seguimiento.",
-      "Responsables y acciones mínimas identificadas.",
-      "Plan de mejora con seguimiento y evidencias.",
-      "Ciclo institucional de evaluación, mejora, reevaluación y aprendizaje colectivo."
+    id: "tutoria",
+    number: "11",
+    title: "Tutoría",
+    description: "Revisa si existe seguimiento académico y motivacional, y si están claros horarios y modos de contacto con el equipo docente.",
+    items: [
+      { code: "11.1", text: "Se elabora un plan de acción tutorial para realizar el seguimiento académico y motivacional del trabajo individual y grupal." },
+      { code: "11.2", text: "Se establecen los horarios y modos de contacto con el profesor o equipo docente a través de diferentes canales de comunicación." }
     ]
-  },
+  }
 ];
