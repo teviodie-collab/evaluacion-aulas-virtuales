@@ -27,7 +27,7 @@
   <main class="shell layout">
     <nav class="sidebar" aria-label="Navegación de la evaluación">
       <a href="#datos">Datos del aula</a>
-      <a href="#rubrica">Grilla</a>
+      <a href="#instrumento">Instrumento</a>
       <a href="#resultados">Resultados</a>
       <a href="#historial">Historial local</a>
       <a href="#guia">Guía de uso</a>
@@ -38,7 +38,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">Paso 1</p>
-            <h2>Datos de identificación</h2>
+            <h2>Datos de identificación del aula virtual</h2>
           </div>
           <button type="button" class="ghost" id="newEvaluationBtn">Nueva evaluación</button>
         </div>
@@ -46,12 +46,20 @@
         <form id="evaluationForm" novalidate>
           <div class="form-grid">
             <label>
+              Correo electrónico
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="nombre@dominio.edu" />
+            </label>
+            <label>
               Evaluador/a
               <input id="evaluator" name="evaluator" type="text" autocomplete="name" required placeholder="Nombre completo" />
             </label>
             <label>
               Fecha de evaluación
               <input id="date" name="date" type="date" required />
+            </label>
+            <label>
+              Nombre de aula virtual
+              <input id="virtualClassroomName" name="virtualClassroomName" type="text" placeholder="Nombre exacto en Moodle" />
             </label>
             <label>
               Carrera / oferta académica
@@ -62,6 +70,10 @@
               <select id="course" name="course" required></select>
             </label>
             <label>
+              Código SIU
+              <input id="siuCode" name="siuCode" type="text" placeholder="Código SIU Guaraní" />
+            </label>
+            <label>
               Modalidad
               <select id="modality" name="modality">
                 <option value="Presencial con complementos virtuales">Presencial con complementos virtuales</option>
@@ -69,42 +81,54 @@
                 <option value="A distancia">A distancia</option>
               </select>
             </label>
+            <label class="wide">
+              Espacios curriculares según SIU / carrera
+              <textarea id="curricularSpaces" name="curricularSpaces" rows="2" placeholder="Enumeración de espacios curriculares, código SIU y carrera según SIU Guaraní."></textarea>
+            </label>
+            <label class="wide">
+              Equipo docente según SIU
+              <textarea id="teachingTeam" name="teachingTeam" rows="2" placeholder="Nombres y apellidos tal como figuran en SIU."></textarea>
+            </label>
+            <label class="wide">
+              Referentes evaluadores
+              <textarea id="evaluationReferents" name="evaluationReferents" rows="2" placeholder="Referentes institucionales, pedagógicos, técnicos o del área EaD."></textarea>
+            </label>
             <label>
               Último acceso / revisión del aula
               <input id="lastAccess" name="lastAccess" type="date" />
             </label>
-            <label class="wide">
+            <label>
               URL del aula o enlace de referencia
               <input id="courseUrl" name="courseUrl" type="url" placeholder="https://..." />
             </label>
             <label class="wide">
-              Observaciones generales
-              <textarea id="generalNotes" name="generalNotes" rows="3" placeholder="Contexto de la evaluación, cohorte, particularidades del aula, fuentes consultadas, etc."></textarea>
+              Observaciones generales iniciales
+              <textarea id="generalNotes" name="generalNotes" rows="3" placeholder="Contexto de la evaluación, cohorte, fuentes consultadas, particularidades del aula, etc."></textarea>
             </label>
           </div>
         </form>
       </section>
 
-      <section id="rubrica" class="panel">
+      <section id="instrumento" class="panel">
         <div class="section-heading">
           <div>
             <p class="eyebrow">Paso 2</p>
-            <h2>Grilla de evaluación por descriptores</h2>
+            <h2>Instrumento de evaluación</h2>
           </div>
-          <div class="mini-score"><span id="answeredCount">0</span>/<span id="totalCount">0</span> descriptores respondidos</div>
+          <div class="mini-score"><span id="answeredCount">0</span>/<span id="totalCount">0</span> criterios respondidos</div>
         </div>
 
         <div class="scale-help">
-          <span><strong>1</strong> Nada</span>
-          <span><strong>2</strong> Poco</span>
-          <span><strong>3</strong> Neutro</span>
-          <span><strong>4</strong> Mucho</span>
-          <span><strong>5</strong> Totalmente</span>
-          <span><strong>NA</strong> No aplica</span>
+          <span><strong>1</strong> Inicial</span>
+          <span><strong>2</strong> Básico</span>
+          <span><strong>3</strong> Organizado</span>
+          <span><strong>4</strong> Personalizado</span>
+          <span><strong>5</strong> Avanzado</span>
+          <span><strong>6</strong> Innovador</span>
         </div>
 
         <div class="hint-box">
-          La puntuación global se calcula sobre los descriptores respondidos. Las opciones <strong>NA</strong> no suman ni restan. La dimensión Accesibilidad se marca como prioritaria si queda por debajo del mínimo institucional.
+          En los listados de aspectos observables, marcar sólo aquellos que <strong>NO están presentes</strong> en el aula. La escala 1–6 permite valorar el nivel de desarrollo de cada bloque. COIL puede excluirse si no corresponde a la propuesta evaluada.
         </div>
 
         <div id="rubricContainer" class="rubric-stack"></div>
@@ -114,7 +138,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">Paso 3</p>
-            <h2>Resultados y plan de mejora</h2>
+            <h2>Resultados, aval y plan de mejora</h2>
           </div>
           <div class="button-row">
             <button type="button" id="calculateBtn">Calcular</button>
@@ -123,7 +147,7 @@
         </div>
 
         <div id="resultBox" class="result-box empty">
-          Completá la grilla y presioná “Calcular”.
+          Completá el instrumento y presioná “Calcular”.
         </div>
 
         <div class="button-row wrap">
@@ -142,19 +166,20 @@
           </div>
           <button type="button" class="danger ghost" id="clearHistoryBtn">Borrar historial</button>
         </div>
-        <p class="muted">Esta versión no usa servidor: guarda los datos en <em>localStorage</em>. Para una facultad completa conviene conectar Firebase, Supabase, Google Sheets o una base institucional.</p>
+        <p class="muted">Esta versión no usa servidor: guarda datos en <em>localStorage</em>. Para uso institucional centralizado conviene conectarla a Firebase, Supabase, Google Sheets o una base propia.</p>
         <div id="historyList" class="history-list"></div>
       </section>
 
       <section id="guia" class="panel guide">
         <p class="eyebrow">Notas de implementación</p>
         <h2>Cómo leer esta versión</h2>
-        <p>Esta app convierte la grilla institucional en una evaluación por descriptores. Cada criterio se responde con la escala Nada, Poco, Neutro, Mucho, Totalmente o NA.</p>
+        <p>La plataforma combina campos de identificación, listas de aspectos observables, criterios de evaluación por escala 1–6, evaluación opcional de COIL y nivel general de digitalización.</p>
         <ul>
           <li><strong>Aprobada:</strong> 70 puntos o más, sin accesibilidad crítica.</li>
           <li><strong>Condicionada:</strong> entre 55 y 69 puntos, o 70+ con accesibilidad por debajo del mínimo.</li>
           <li><strong>Crítica:</strong> menos de 55 puntos.</li>
-          <li><strong>Prioridades:</strong> el sistema ordena automáticamente las dimensiones con menor desempeño.</li>
+          <li><strong>Aval académico:</strong> se informa en función del puntaje global y del nivel de digitalización seleccionado.</li>
+          <li><strong>Aspectos no presentes:</strong> sirven para orientar acciones concretas de mejora y no se deben marcar como “presentes”.</li>
         </ul>
       </section>
     </section>

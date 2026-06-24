@@ -1,5 +1,5 @@
 (() => {
-  const { APP_CONFIG, RUBRIC } = window;
+  const { APP_CONFIG, EVALUATION_MODEL } = window;
 
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
@@ -14,7 +14,7 @@
   function init() {
     setDefaultDate();
     populatePrograms();
-    renderRubric();
+    renderInstrument();
     bindEvents();
     updateCounters();
     renderHistory();
@@ -23,7 +23,7 @@
 
   function setDefaultDate() {
     const date = $("#date");
-    if (!date.value) date.value = new Date().toISOString().slice(0, 10);
+    if (date && !date.value) date.value = new Date().toISOString().slice(0, 10);
   }
 
   function populatePrograms() {
@@ -72,57 +72,111 @@
     if (selectedValue) courseSelect.value = selectedValue;
   }
 
-  function renderRubric() {
+  function renderInstrument() {
     const container = $("#rubricContainer");
-    container.innerHTML = RUBRIC.map((dimension) => `
-      <article class="dimension-card" data-dimension="${dimension.id}">
-        <header class="dimension-head">
-          <div class="dimension-title-wrap">
-            <span class="dimension-number">${escapeHtml(dimension.number)}</span>
-            <div>
-              <h3>${escapeHtml(dimension.title)}</h3>
-              <p>${escapeHtml(dimension.description)}</p>
-            </div>
-          </div>
-          <div class="dimension-score" id="dimension-score-${dimension.id}">
-            <span>Dimensión</span>
-            <strong>—</strong>
-            <span>${dimension.items.length} descriptores</span>
-          </div>
-        </header>
-
-        <div class="descriptor-list">
-          ${dimension.items.map((item) => renderDescriptor(dimension.id, item)).join("")}
-        </div>
-
-        <div class="dimension-notes">
-          <label>
-            Observaciones / evidencias de la dimensión ${escapeHtml(dimension.number)}
-            <textarea id="notes-${dimension.id}" placeholder="Registrar evidencias observadas, capturas, aclaraciones o acciones sugeridas."></textarea>
-          </label>
-        </div>
-      </article>
-    `).join("");
-
-    $("#totalCount").textContent = String(totalDescriptors());
+    container.innerHTML = EVALUATION_MODEL.map(renderSection).join("");
+    $("#totalCount").textContent = String(totalCriteria());
   }
 
-  function renderDescriptor(dimensionId, item) {
-    const name = inputName(dimensionId, item.code);
-    return `
-      <div class="descriptor-row" data-code="${escapeHtml(item.code)}">
-        <div class="descriptor-text">
-          <span class="descriptor-code">${escapeHtml(item.code)}</span>
-          <p>${escapeHtml(item.text)}</p>
+  function renderSection(section) {
+    const optional = section.optionalToggle ? `
+      <label class="optional-toggle">
+        <input type="checkbox" id="exclude-${section.id}" />
+        No corresponde evaluar este bloque en el aula seleccionada
+      </label>` : "";
+
+    const observables = section.observables?.length ? `
+      <div class="sub-block observable-block">
+        <div class="sub-heading">
+          <div>
+            <h4>${escapeHtml(section.observablesLabel || "Aspectos observables que NO están presentes")}</h4>
+            <p>Marcar únicamente los elementos ausentes. Dejar sin marcar lo que sí se observa en el aula.</p>
+          </div>
+          <label class="confirm-check">
+            <input type="checkbox" id="confirmed-${section.id}" />
+            Observables revisados
+          </label>
         </div>
-        <div class="radio-grid" role="radiogroup" aria-label="${escapeHtml(item.code)}">
-          ${APP_CONFIG.scale.map((scale) => `
-            <label class="radio-tile" title="${escapeHtml(scale.help)}">
-              <input type="radio" name="${name}" value="${escapeHtml(scale.value)}" />
-              <span>${escapeHtml(scale.label)}</span>
+        <div class="checkbox-grid">
+          ${section.observables.map((item, index) => `
+            <label class="check-tile absent">
+              <input type="checkbox" name="absent-${section.id}" value="${escapeHtml(item)}" data-index="${index}" />
+              <span>${escapeHtml(item)}</span>
             </label>
           `).join("")}
         </div>
+      </div>` : "";
+
+    const resourceChecklist = section.resourceChecklist?.items?.length ? `
+      <div class="sub-block resource-block">
+        <h4>${escapeHtml(section.resourceChecklist.title)}</h4>
+        <div class="checkbox-grid compact">
+          ${section.resourceChecklist.items.map((item, index) => `
+            <label class="check-tile present">
+              <input type="checkbox" name="present-${section.id}" value="${escapeHtml(item)}" data-index="${index}" />
+              <span>${escapeHtml(item)}</span>
+            </label>
+          `).join("")}
+        </div>
+      </div>` : "";
+
+    const criteria = section.criteria.map((criterion) => renderCriterion(section.id, criterion)).join("");
+
+    return `
+      <article class="dimension-card" data-section="${escapeHtml(section.id)}">
+        <header class="dimension-head">
+          <div class="dimension-title-wrap">
+            <span class="dimension-number">${escapeHtml(section.number)}</span>
+            <div>
+              <h3>${escapeHtml(section.title)}</h3>
+              <p>${escapeHtml(section.description)}</p>
+            </div>
+          </div>
+          <div class="dimension-score" id="section-score-${section.id}">
+            <span>Peso ${section.weight}%</span>
+            <strong>—</strong>
+            <span>${section.criteria.length} criterios</span>
+          </div>
+        </header>
+        ${optional}
+        ${observables}
+        <div class="criteria-stack">${criteria}</div>
+        ${resourceChecklist}
+        <div class="dimension-notes">
+          <label>
+            Observaciones / evidencias del bloque ${escapeHtml(section.number)}
+            <textarea id="notes-${section.id}" placeholder="Registrar capturas, enlaces, evidencias Moodle, aclaraciones o acciones sugeridas."></textarea>
+          </label>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderCriterion(sectionId, criterion) {
+    const name = inputName(sectionId, criterion.id);
+    return `
+      <div class="criterion-card" data-criterion="${escapeHtml(criterion.id)}">
+        <div class="criterion-head">
+          <div>
+            <h4>${escapeHtml(criterion.title)}</h4>
+            <p>${escapeHtml(criterion.prompt)}</p>
+          </div>
+        </div>
+        <div class="radio-grid six" role="radiogroup" aria-label="${escapeHtml(criterion.title)}">
+          ${APP_CONFIG.scale.map((scale) => `
+            <label class="radio-tile" title="${escapeHtml(scale.help)}">
+              <input type="radio" name="${escapeHtml(name)}" value="${escapeHtml(scale.value)}" />
+              <strong>${escapeHtml(scale.shortLabel)}</strong>
+              <span>${escapeHtml(scale.label.replace(/^\d+ · /, ""))}</span>
+            </label>
+          `).join("")}
+        </div>
+        <details class="level-details">
+          <summary>Ver descriptores de nivel</summary>
+          <ol>
+            ${Object.entries(criterion.levels).map(([level, text]) => `<li><strong>${escapeHtml(level)}.</strong> ${escapeHtml(text)}</li>`).join("")}
+          </ol>
+        </details>
       </div>
     `;
   }
@@ -133,9 +187,14 @@
       calculate(true);
     });
 
-    ["#evaluator", "#date", "#program", "#course", "#modality", "#lastAccess", "#courseUrl", "#generalNotes"].forEach((selector) => {
-      $(selector).addEventListener("input", () => calculate(true));
-      $(selector).addEventListener("change", () => calculate(true));
+    const metaSelectors = [
+      "#email", "#evaluator", "#date", "#virtualClassroomName", "#program", "#course", "#siuCode",
+      "#modality", "#curricularSpaces", "#teachingTeam", "#evaluationReferents", "#lastAccess", "#courseUrl", "#generalNotes"
+    ];
+    metaSelectors.forEach((selector) => {
+      const el = $(selector);
+      el.addEventListener("input", () => calculate(true));
+      el.addEventListener("change", () => calculate(true));
     });
 
     $("#calculateBtn").addEventListener("click", () => calculate(false));
@@ -152,82 +211,108 @@
     const programKey = $("#program").value;
     const program = APP_CONFIG.programs[programKey];
     return {
+      email: $("#email").value.trim(),
       evaluator: $("#evaluator").value.trim(),
       date: $("#date").value,
+      virtualClassroomName: $("#virtualClassroomName").value.trim(),
       programKey,
       programLabel: program?.label || "",
       courseLabel: program?.courseLabel || "Cátedra",
       course: $("#course").value,
+      siuCode: $("#siuCode").value.trim(),
       modality: $("#modality").value,
+      curricularSpaces: $("#curricularSpaces").value.trim(),
+      teachingTeam: $("#teachingTeam").value.trim(),
+      evaluationReferents: $("#evaluationReferents").value.trim(),
       lastAccess: $("#lastAccess").value,
       courseUrl: $("#courseUrl").value.trim(),
       generalNotes: $("#generalNotes").value.trim()
     };
   }
 
-  function collectDimensions() {
-    return RUBRIC.map((dimension) => {
-      const itemResults = dimension.items.map((item) => {
-        const checked = $(`input[name="${cssEscape(inputName(dimension.id, item.code))}"]:checked`);
+  function collectSections() {
+    return EVALUATION_MODEL.map((section) => {
+      const excluded = Boolean(section.optionalToggle && $(`#exclude-${section.id}`)?.checked);
+      const absentItems = $$( `input[name="absent-${section.id}"]:checked`).map((input) => input.value);
+      const presentItems = $$( `input[name="present-${section.id}"]:checked`).map((input) => input.value);
+      const observablesConfirmed = Boolean($(`#confirmed-${section.id}`)?.checked);
+      const observableScore = section.observables?.length
+        ? Math.round(((section.observables.length - absentItems.length) / section.observables.length) * 100)
+        : null;
+
+      const criteria = section.criteria.map((criterion) => {
+        const checked = $(`input[name="${cssEscape(inputName(section.id, criterion.id))}"]:checked`);
         const value = checked?.value || "";
-        const numeric = value && value !== "NA" ? Number(value) : null;
+        const numeric = value ? Number(value) : null;
         return {
-          code: item.code,
-          text: item.text,
+          id: criterion.id,
+          title: criterion.title,
           value,
           numeric,
-          percent: numeric === null ? null : Math.round(((numeric - 1) / 4) * 100)
+          percent: numeric === null ? 0 : Math.round(((numeric - 1) / 5) * 100),
+          levelText: numeric === null ? "" : criterion.levels[String(numeric)]
         };
       });
 
-      const answered = itemResults.filter((item) => item.value !== "").length;
-      const applicable = itemResults.filter((item) => item.numeric !== null);
-      const notApplicable = itemResults.filter((item) => item.value === "NA").length;
-      const missing = itemResults.length - answered;
-      const rawAverage = applicable.length
-        ? applicable.reduce((sum, item) => sum + item.numeric, 0) / applicable.length
-        : null;
-      const percent = rawAverage === null ? null : Math.round(((rawAverage - 1) / 4) * 100);
-      const notes = $(`#notes-${dimension.id}`).value.trim();
+      const components = [];
+      if (section.observables?.length) components.push(observablesConfirmed ? observableScore : 0);
+      criteria.forEach((criterion) => components.push(criterion.percent));
+
+      const percent = excluded
+        ? null
+        : components.length
+          ? Math.round(components.reduce((sum, value) => sum + value, 0) / components.length)
+          : null;
+
+      const notes = $(`#notes-${section.id}`).value.trim();
+      const answeredCriteria = criteria.filter((criterion) => criterion.value !== "").length;
+      const missingCriteria = criteria.length - answeredCriteria;
 
       return {
-        id: dimension.id,
-        number: dimension.number,
-        title: dimension.title,
-        gate: Boolean(dimension.gate),
-        totalItems: dimension.items.length,
-        answered,
-        missing,
-        applicable: applicable.length,
-        notApplicable,
-        average: rawAverage === null ? null : round(rawAverage, 2),
+        id: section.id,
+        number: section.number,
+        title: section.title,
+        weight: section.weight,
+        gate: Boolean(section.gate),
+        optional: Boolean(section.optionalToggle),
+        excluded,
+        observablesLabel: section.observablesLabel || "",
+        totalObservables: section.observables?.length || 0,
+        observablesConfirmed,
+        absentItems,
+        presentItems,
+        observableScore,
+        criteria,
+        answeredCriteria,
+        missingCriteria,
         percent,
-        notes,
-        items: itemResults
+        notes
       };
     });
   }
 
   function calculate(silent = false) {
     const meta = collectMeta();
-    const dimensions = collectDimensions();
-    const allItems = dimensions.flatMap((dimension) => dimension.items);
-    const answeredItems = allItems.filter((item) => item.value !== "");
-    const applicableItems = allItems.filter((item) => item.numeric !== null);
-    const missingItems = allItems.length - answeredItems.length;
+    const sections = collectSections();
+    const includedSections = sections.filter((section) => !section.excluded);
+    const answeredCriteria = sections.reduce((sum, section) => sum + section.answeredCriteria, 0);
+    const totalCriteriaCount = includedSections.reduce((sum, section) => sum + section.criteria.length, 0);
+    const missingCriteria = includedSections.reduce((sum, section) => sum + section.missingCriteria, 0);
 
-    const totalScore = applicableItems.length
-      ? Math.round((applicableItems.reduce((sum, item) => sum + ((item.numeric - 1) / 4), 0) / applicableItems.length) * 100)
-      : 0;
+    const denominator = includedSections.reduce((sum, section) => sum + section.weight, 0);
+    const weightedSum = includedSections.reduce((sum, section) => {
+      const value = section.percent === null ? 0 : section.percent;
+      return sum + (value * section.weight);
+    }, 0);
+    const totalScore = denominator ? Math.round(weightedSum / denominator) : 0;
 
-    const accessibility = dimensions.find((dimension) => dimension.id === "accesibilidad");
-    const criticalDimensions = dimensions.filter((dimension) => dimension.percent !== null && dimension.percent < APP_CONFIG.thresholds.dimensionCritical);
-    const accessibilityFailure = accessibility && accessibility.percent !== null && accessibility.percent < APP_CONFIG.thresholds.accessibilityMinimum;
+    const accessibility = sections.find((section) => section.id === "diseno_accesibilidad");
+    const accessibilityFailure = accessibility && !accessibility.excluded && accessibility.percent !== null && accessibility.percent < APP_CONFIG.thresholds.accessibilityMinimum;
+    const criticalSections = includedSections.filter((section) => section.percent !== null && section.percent < APP_CONFIG.thresholds.sectionCritical);
 
     let status = "Sin calcular";
     let statusClass = "empty";
-
-    if (answeredItems.length > 0) {
+    if (answeredCriteria > 0 || sections.some((section) => section.observablesConfirmed)) {
       if (totalScore < APP_CONFIG.thresholds.conditional) {
         status = "Crítica";
         statusClass = "critical";
@@ -240,261 +325,310 @@
       }
     }
 
+    const digitalizationCriterion = sections
+      .find((section) => section.id === "observaciones_generales")
+      ?.criteria.find((criterion) => criterion.id === "nivel_digitalizacion");
+    const digitalization = digitalizationCriterion?.numeric
+      ? {
+          level: digitalizationCriterion.numeric,
+          percent: digitalizationCriterion.percent,
+          text: digitalizationCriterion.levelText,
+          endorsement: endorsementFromDigitalization(digitalizationCriterion.numeric)
+        }
+      : null;
+
     const result = {
       id: state.editingId || createId(),
       createdAt: new Date().toISOString(),
       meta,
-      dimensions,
-      totalDescriptors: allItems.length,
-      answeredDescriptors: answeredItems.length,
-      applicableDescriptors: applicableItems.length,
-      missingDescriptors: missingItems,
+      sections,
+      includedWeight: denominator,
+      totalCriteria: totalCriteriaCount,
+      answeredCriteria,
+      missingCriteria,
       totalScore,
       status,
       statusClass,
-      criticalDimensions,
       accessibilityFailure,
-      priorities: buildPriorities(dimensions)
+      digitalization,
+      criticalSections,
+      priorities: buildPriorities(sections)
     };
 
     state.currentResult = result;
-    updateDimensionScores(dimensions);
+    updateSectionScores(sections);
     renderResult(result, silent);
-    updateCounters();
+    updateHeader(result);
     return result;
   }
 
-  function updateDimensionScores(dimensions) {
-    dimensions.forEach((dimension) => {
-      const box = $(`#dimension-score-${dimension.id}`);
-      if (!box) return;
-      let cls = "dimension-score";
-      if (dimension.percent === null) cls += " partial";
-      else if (dimension.percent < 50) cls += " critical";
-      else if (dimension.percent < 70) cls += " partial";
-      else cls += " good";
-      box.className = cls;
-      box.innerHTML = `
-        <span>Dimensión</span>
-        <strong>${dimension.percent === null ? "—" : `${dimension.percent}/100`}</strong>
-        <span>${dimension.answered}/${dimension.totalItems} respondidos${dimension.notApplicable ? ` · ${dimension.notApplicable} NA` : ""}</span>
-      `;
+  function updateSectionScores(sections) {
+    sections.forEach((section) => {
+      const target = $(`#section-score-${section.id}`);
+      if (!target) return;
+      const strong = $("strong", target);
+      const spans = $$("span", target);
+      if (section.excluded) {
+        strong.textContent = "Excluido";
+        target.className = "dimension-score excluded";
+      } else if (section.percent === null) {
+        strong.textContent = "—";
+        target.className = "dimension-score";
+      } else {
+        strong.textContent = `${section.percent}/100`;
+        target.className = `dimension-score ${scoreClass(section.percent)}`;
+      }
+      if (spans[1]) {
+        const missing = section.missingCriteria;
+        spans[1].textContent = missing ? `${missing} sin responder` : "Completo";
+      }
     });
   }
 
   function renderResult(result, silent) {
-    $("#headerScore").textContent = `${result.totalScore} / 100`;
-    $("#headerStatus").textContent = result.status;
-    const resultBox = $("#resultBox");
+    const box = $("#resultBox");
+    const sectionRows = result.sections.map((section) => {
+      const visibleScore = section.excluded ? "Excluido" : `${section.percent ?? 0}/100`;
+      const absent = section.absentItems.length ? section.absentItems.join("; ") : "Sin ausencias marcadas";
+      return `
+        <tr>
+          <td>${escapeHtml(section.number)}. ${escapeHtml(section.title)}</td>
+          <td>${escapeHtml(visibleScore)}</td>
+          <td>${escapeHtml(String(section.weight))}%</td>
+          <td>${escapeHtml(absent)}</td>
+        </tr>`;
+    }).join("");
 
-    if (result.answeredDescriptors === 0) {
-      resultBox.className = "result-box empty";
-      resultBox.innerHTML = "Completá la grilla y presioná “Calcular”.";
-      return;
-    }
+    const priorities = result.priorities.length
+      ? `<ol>${result.priorities.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`
+      : "<p>No se detectan prioridades críticas con los datos cargados.</p>";
 
-    resultBox.className = `result-box ${result.statusClass}`;
+    const digitalizationHtml = result.digitalization
+      ? `<p><strong>Nivel de digitalización seleccionado:</strong> ${result.digitalization.level}/6 · ${escapeHtml(result.digitalization.text)}<br><strong>Aval orientativo:</strong> ${escapeHtml(result.digitalization.endorsement)}</p>`
+      : `<p><strong>Nivel de digitalización:</strong> sin seleccionar.</p>`;
 
-    const missingMessage = result.missingDescriptors > 0
-      ? `<p><strong>Atención:</strong> faltan ${result.missingDescriptors} descriptores por responder. El puntaje es parcial.</p>`
+    const missingWarning = result.missingCriteria > 0
+      ? `<p class="warning-line">Quedan ${result.missingCriteria} criterios sin responder. El resultado puede variar al completar la evaluación.</p>`
       : "";
 
     const accessibilityWarning = result.accessibilityFailure
-      ? `<h3>Alerta de accesibilidad</h3><p>La dimensión Accesibilidad quedó por debajo de ${APP_CONFIG.thresholds.accessibilityMinimum}/100. Se recomienda tratarla como mejora prioritaria antes de considerar aprobada el aula.</p>`
+      ? `<p class="warning-line">Atención: Diseño instruccional y accesibilidad queda por debajo del mínimo institucional.</p>`
       : "";
 
-    resultBox.innerHTML = `
-      <div class="result-grid">
-        <div class="big-score">
-          <span>Puntaje global</span>
-          <strong>${result.totalScore}</strong>
-          <span>${escapeHtml(result.status)}</span>
+    box.className = `result-box ${result.statusClass}`;
+    box.innerHTML = `
+      <div class="result-main">
+        <div>
+          <span class="result-label">Puntaje global</span>
+          <strong>${result.totalScore}/100</strong>
         </div>
         <div>
-          <h3>Informe breve</h3>
-          <p>${escapeHtml(summaryText(result))}</p>
-          ${missingMessage}
-          ${accessibilityWarning}
-          <h3>Prioridades de mejora</h3>
-          <ol class="action-list">
-            ${result.priorities.map((item) => `<li><strong>${escapeHtml(item.title)}:</strong> ${item.percent === null ? "sin datos" : `${item.percent}/100`}. ${escapeHtml(item.recommendation)}</li>`).join("") || "<li>No se detectan prioridades críticas. Sostener seguimiento y mejora continua.</li>"}
-          </ol>
-          <div class="score-table-wrap">
-            <table class="score-table">
-              <thead>
-                <tr>
-                  <th>Dimensión</th>
-                  <th>Puntaje</th>
-                  <th>Respondidos</th>
-                  <th>NA</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${result.dimensions.map((dimension) => `
-                  <tr>
-                    <td>${escapeHtml(dimension.number)}. ${escapeHtml(dimension.title)}</td>
-                    <td>${dimension.percent === null ? "—" : `${dimension.percent}/100`}</td>
-                    <td>${dimension.answered}/${dimension.totalItems}</td>
-                    <td>${dimension.notApplicable}</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-            </table>
-          </div>
+          <span class="result-label">Estado</span>
+          <strong>${escapeHtml(result.status)}</strong>
+        </div>
+        <div>
+          <span class="result-label">Criterios respondidos</span>
+          <strong>${result.answeredCriteria}/${result.totalCriteria}</strong>
         </div>
       </div>
+      ${missingWarning}
+      ${accessibilityWarning}
+      ${digitalizationHtml}
+      <h3>Resultado por bloque</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bloque</th><th>Puntaje</th><th>Peso</th><th>Aspectos no presentes</th></tr></thead>
+          <tbody>${sectionRows}</tbody>
+        </table>
+      </div>
+      <h3>Prioridades de mejora</h3>
+      ${priorities}
     `;
 
-    if (!silent) resultBox.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function buildPriorities(dimensions) {
-    return dimensions
-      .filter((dimension) => dimension.percent === null || dimension.percent < 70)
-      .sort((a, b) => (a.percent ?? -1) - (b.percent ?? -1))
-      .slice(0, 5)
-      .map((dimension) => ({
-        title: dimension.title,
-        percent: dimension.percent,
-        recommendation: recommendationFor(dimension)
-      }));
-  }
-
-  function recommendationFor(dimension) {
-    const map = {
-      objetivos: "Revisar programa, hoja de ruta, objetivos/competencias y alineación con actividades, evaluación y recursos.",
-      evaluacion: "Transparentar criterios, diversificar instrumentos y explicitar formas de retroalimentación.",
-      tecnologias: "Seleccionar herramientas digitales pertinentes para participación, comunicación y colaboración, no sólo para repositorio.",
-      usabilidad: "Ordenar bloques, reducir clics, corregir enlaces y mejorar instrucciones de navegación.",
-      mediacion_materiales: "Mejorar claridad, formato de contenidos, consignas completas y referencias/licencias de materiales.",
-      reflexion_innovacion: "Incorporar actividades de comprensión, producción, colaboración, resolución de casos y reflexión crítica.",
-      interactividad_adaptabilidad: "Diseñar recorridos o actividades diferenciadas y aumentar la interacción del estudiante con el contenido.",
-      autonomia: "Aclarar expectativas de trabajo autónomo y vincular actividades con el campo profesional/social.",
-      formato_diseno: "Incorporar formatos multimodales de calidad y revisar criterios estéticos para favorecer estudio y reflexión.",
-      accesibilidad: "Remediar documentos, imágenes, videos y navegación según criterios de accesibilidad y diversidad funcional.",
-      tutoria: "Explicitar plan tutorial, seguimiento académico/motivacional y canales/horarios de contacto."
-    };
-    return map[dimension.id] || "Definir acciones de mejora con responsable, plazo y evidencia de cierre.";
-  }
-
-  function summaryText(result) {
-    const meta = result.meta;
-    const course = meta.course || "aula no especificada";
-    const program = meta.programLabel || "oferta no especificada";
-    const base = `La evaluación de ${course} (${program}) arroja ${result.totalScore}/100 y estado ${result.status}.`;
-    const descriptors = `Se respondieron ${result.answeredDescriptors} de ${result.totalDescriptors} descriptores; ${result.applicableDescriptors} fueron aplicables.`;
-    const priority = result.priorities.length
-      ? `Las prioridades iniciales son: ${result.priorities.map((item) => item.title).join(", ")}.`
-      : "No se identifican prioridades críticas inmediatas.";
-    return `${base} ${descriptors} ${priority}`;
-  }
-
-  function validateMeta() {
-    const form = $("#evaluationForm");
-    if (!form.checkValidity()) {
-      form.reportValidity();
-      return false;
+    if (!silent) {
+      box.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-    return true;
+  }
+
+  function updateHeader(result) {
+    $("#headerScore").textContent = `${result.totalScore} / 100`;
+    $("#headerStatus").textContent = result.status;
+    $("#headerStatus").className = result.statusClass;
+  }
+
+  function updateCounters() {
+    const total = totalCriteria();
+    const answered = $$("#rubricContainer input[type='radio']:checked").length;
+    $("#answeredCount").textContent = String(answered);
+    $("#totalCount").textContent = String(total);
+  }
+
+  function totalCriteria() {
+    return EVALUATION_MODEL.reduce((sum, section) => sum + section.criteria.length, 0);
+  }
+
+  function buildPriorities(sections) {
+    const priorities = [];
+
+    sections
+      .filter((section) => !section.excluded && section.percent !== null && section.percent < 60)
+      .sort((a, b) => a.percent - b.percent)
+      .slice(0, 4)
+      .forEach((section) => priorities.push(`Revisar ${section.number}. ${section.title}: puntaje ${section.percent}/100.`));
+
+    sections.forEach((section) => {
+      if (section.excluded) return;
+      if (!section.observablesConfirmed && section.totalObservables > 0) {
+        priorities.push(`Confirmar la revisión de aspectos observables en ${section.number}. ${section.title}.`);
+      }
+      if (section.absentItems.length) {
+        const sample = section.absentItems.slice(0, 3).join(", ");
+        priorities.push(`Incorporar o documentar en ${section.number}. ${section.title}: ${sample}${section.absentItems.length > 3 ? "…" : ""}.`);
+      }
+    });
+
+    return [...new Set(priorities)].slice(0, 8);
+  }
+
+  function endorsementFromDigitalization(level) {
+    const map = {
+      1: "Sin aval académico según el nivel de digitalización declarado.",
+      2: "Aval con observaciones: requiere mejoras para consolidar la propuesta virtual.",
+      3: "Otorga aval: trayecto parcialmente personalizado.",
+      4: "Otorga aval: trayecto mayormente personalizado.",
+      5: "Otorga aval fortalecido: trayecto completamente personalizado con seguimiento visible.",
+      6: "Aval destacado: trayecto personalizado específico con alto nivel de digitalización."
+    };
+    return map[level] || "Sin definición.";
   }
 
   function saveCurrent() {
-    if (!validateMeta()) return;
-    const result = calculate(false);
-    if (result.answeredDescriptors === 0) {
-      alert("Completá al menos un descriptor antes de guardar.");
+    const form = $("#evaluationForm");
+    if (!form.checkValidity()) {
+      form.reportValidity();
       return;
     }
-
-    const history = getHistory();
-    const index = history.findIndex((item) => item.id === result.id);
-    if (index >= 0) history[index] = result;
-    else history.unshift(result);
-
-    localStorage.setItem(APP_CONFIG.storageKey, JSON.stringify(history));
+    const result = calculate(true);
+    const saved = loadSaved();
+    const index = saved.findIndex((item) => item.id === result.id);
+    if (index >= 0) saved[index] = result;
+    else saved.unshift(result);
+    localStorage.setItem(APP_CONFIG.storageKey, JSON.stringify(saved.slice(0, 200)));
     state.editingId = result.id;
     renderHistory();
-    alert("Evaluación guardada en este navegador.");
+    notify("Evaluación guardada en este navegador.");
+  }
+
+  function loadSaved() {
+    try {
+      return JSON.parse(localStorage.getItem(APP_CONFIG.storageKey) || "[]");
+    } catch (error) {
+      console.warn("No se pudo leer el historial", error);
+      return [];
+    }
   }
 
   function renderHistory() {
-    const history = getHistory();
-    const list = $("#historyList");
-    if (!history.length) {
-      list.innerHTML = '<p class="muted">Todavía no hay evaluaciones guardadas.</p>';
+    const target = $("#historyList");
+    const saved = loadSaved();
+    if (!saved.length) {
+      target.innerHTML = '<p class="muted">Todavía no hay evaluaciones guardadas.</p>';
       return;
     }
 
-    list.innerHTML = history.map((item) => `
-      <article class="history-item">
+    target.innerHTML = saved.map((item) => `
+      <article class="history-card">
         <div>
-          <h3>${escapeHtml(item.meta.course || "Aula sin nombre")}</h3>
-          <p>${escapeHtml(item.meta.programLabel || "")} · ${formatDate(item.meta.date)} · ${item.totalScore}/100 · ${escapeHtml(item.status)}</p>
+          <strong>${escapeHtml(item.meta.course || item.meta.virtualClassroomName || "Aula sin nombre")}</strong>
+          <p>${escapeHtml(item.meta.programLabel || "")} · ${escapeHtml(item.meta.date || "Sin fecha")} · ${escapeHtml(item.status)} · ${item.totalScore}/100</p>
         </div>
-        <div class="history-actions">
-          <button type="button" class="secondary small" data-action="load" data-id="${item.id}">Abrir</button>
-          <button type="button" class="danger ghost small" data-action="delete" data-id="${item.id}">Borrar</button>
+        <div class="button-row small">
+          <button type="button" class="secondary" data-load="${escapeHtml(item.id)}">Cargar</button>
+          <button type="button" class="danger ghost" data-delete="${escapeHtml(item.id)}">Eliminar</button>
         </div>
       </article>
     `).join("");
 
-    list.addEventListener("click", handleHistoryClick, { once: true });
+    target.addEventListener("click", handleHistoryClick, { once: true });
   }
 
   function handleHistoryClick(event) {
-    const btn = event.target.closest("button[data-action]");
-    if (!btn) {
-      renderHistory();
-      return;
-    }
-    const { action, id } = btn.dataset;
-    if (action === "load") loadEvaluation(id);
-    if (action === "delete") deleteEvaluation(id);
+    const loadId = event.target?.dataset?.load;
+    const deleteId = event.target?.dataset?.delete;
+    if (loadId) loadEvaluation(loadId);
+    if (deleteId) deleteEvaluation(deleteId);
+    renderHistory();
   }
 
   function loadEvaluation(id) {
-    const item = getHistory().find((entry) => entry.id === id);
+    const item = loadSaved().find((entry) => entry.id === id);
     if (!item) return;
     state.editingId = item.id;
 
-    $("#evaluator").value = item.meta.evaluator || "";
-    $("#date").value = item.meta.date || "";
-    $("#program").value = item.meta.programKey || "";
-    populateCourses(item.meta.programKey || "", item.meta.course || "");
-    $("#modality").value = item.meta.modality || "Presencial con complementos virtuales";
-    $("#lastAccess").value = item.meta.lastAccess || "";
-    $("#courseUrl").value = item.meta.courseUrl || "";
-    $("#generalNotes").value = item.meta.generalNotes || "";
+    const meta = item.meta || {};
+    setValue("#email", meta.email || "");
+    setValue("#evaluator", meta.evaluator || "");
+    setValue("#date", meta.date || "");
+    setValue("#virtualClassroomName", meta.virtualClassroomName || "");
+    setValue("#program", meta.programKey || "");
+    populateCourses(meta.programKey || "", meta.course || "");
+    setValue("#siuCode", meta.siuCode || "");
+    setValue("#modality", meta.modality || "Presencial con complementos virtuales");
+    setValue("#curricularSpaces", meta.curricularSpaces || "");
+    setValue("#teachingTeam", meta.teachingTeam || "");
+    setValue("#evaluationReferents", meta.evaluationReferents || "");
+    setValue("#lastAccess", meta.lastAccess || "");
+    setValue("#courseUrl", meta.courseUrl || "");
+    setValue("#generalNotes", meta.generalNotes || "");
 
-    clearDescriptorAnswers();
-    item.dimensions.forEach((dimension) => {
-      const notes = $(`#notes-${dimension.id}`);
-      if (notes) notes.value = dimension.notes || "";
-      dimension.items.forEach((descriptor) => {
-        const selector = `input[name="${cssEscape(inputName(dimension.id, descriptor.code))}"][value="${cssEscape(descriptor.value)}"]`;
-        const input = $(selector);
+    resetInstrumentInputs();
+    (item.sections || []).forEach((section) => {
+      const exclude = $(`#exclude-${section.id}`);
+      if (exclude) exclude.checked = Boolean(section.excluded);
+      const confirmed = $(`#confirmed-${section.id}`);
+      if (confirmed) confirmed.checked = Boolean(section.observablesConfirmed);
+      (section.absentItems || []).forEach((value) => checkByNameAndValue(`absent-${section.id}`, value));
+      (section.presentItems || []).forEach((value) => checkByNameAndValue(`present-${section.id}`, value));
+      (section.criteria || []).forEach((criterion) => {
+        const input = $(`input[name="${cssEscape(inputName(section.id, criterion.id))}"][value="${cssEscape(criterion.value)}"]`);
         if (input) input.checked = true;
       });
+      setValue(`#notes-${section.id}`, section.notes || "");
     });
 
-    calculate(false);
-    renderHistory();
-    $("#datos").scrollIntoView({ behavior: "smooth", block: "start" });
+    updateCounters();
+    calculate(true);
+    notify("Evaluación cargada para editar.");
+  }
+
+  function resetInstrumentInputs() {
+    $$("#rubricContainer input[type='radio'], #rubricContainer input[type='checkbox']").forEach((input) => {
+      input.checked = false;
+    });
+    $$("#rubricContainer textarea").forEach((textarea) => {
+      textarea.value = "";
+    });
+  }
+
+  function checkByNameAndValue(name, value) {
+    const inputs = $$(`input[name="${cssEscape(name)}"]`);
+    const found = inputs.find((input) => input.value === value);
+    if (found) found.checked = true;
   }
 
   function deleteEvaluation(id) {
-    if (!confirm("¿Borrar esta evaluación del historial local?")) return;
-    const history = getHistory().filter((item) => item.id !== id);
-    localStorage.setItem(APP_CONFIG.storageKey, JSON.stringify(history));
+    const saved = loadSaved().filter((item) => item.id !== id);
+    localStorage.setItem(APP_CONFIG.storageKey, JSON.stringify(saved));
     if (state.editingId === id) state.editingId = null;
-    renderHistory();
+    notify("Evaluación eliminada.");
   }
 
   function clearHistory() {
-    if (!confirm("¿Borrar todo el historial local de este navegador?")) return;
+    if (!confirm("¿Borrar todas las evaluaciones guardadas en este navegador?")) return;
     localStorage.removeItem(APP_CONFIG.storageKey);
     state.editingId = null;
     renderHistory();
+    notify("Historial borrado.");
   }
 
   function resetForm() {
@@ -502,162 +636,126 @@
     state.editingId = null;
     $("#evaluationForm").reset();
     setDefaultDate();
-    $("#program").value = "";
-    populateCourses("");
-    clearDescriptorAnswers();
-    $$('textarea[id^="notes-"]').forEach((textarea) => { textarea.value = ""; });
-    calculate(true);
+    populatePrograms();
+    resetInstrumentInputs();
     updateCounters();
-  }
-
-  function clearDescriptorAnswers() {
-    $$("#rubricContainer input[type='radio']").forEach((input) => { input.checked = false; });
+    calculate(true);
   }
 
   function exportJson() {
-    const result = calculate(false);
-    if (result.answeredDescriptors === 0) {
-      alert("No hay evaluación para exportar.");
-      return;
-    }
-    downloadFile(`evaluacion-aula-${safeFileName(result.meta.course || "sin-nombre")}.json`, JSON.stringify(result, null, 2), "application/json;charset=utf-8");
+    const result = calculate(true);
+    downloadFile(`evaluacion-aula-${safeFileName(result.meta.course || result.meta.virtualClassroomName || "moodle")}.json`, JSON.stringify(result, null, 2), "application/json");
   }
 
   function exportCsv() {
-    const history = getHistory();
-    if (!history.length) {
-      alert("No hay historial guardado para exportar.");
-      return;
-    }
+    const saved = loadSaved();
+    const rows = [
+      ["fecha", "correo", "evaluador", "aula", "carrera_oferta", "catedra_oferta", "codigo_siu", "modalidad", "puntaje", "estado", "nivel_digitalizacion", "aval_orientativo"]
+    ];
 
-    const rows = [[
-      "id", "fecha_evaluacion", "evaluador", "oferta", "aula", "modalidad", "ultimo_acceso", "puntaje", "estado", "descriptores_respondidos", "descriptores_aplicables", "observaciones_generales",
-      ...RUBRIC.map((dimension) => `${dimension.number}_${dimension.id}_puntaje`)
-    ]];
-
-    history.forEach((item) => {
+    saved.forEach((item) => {
       rows.push([
-        item.id,
-        item.meta.date,
-        item.meta.evaluator,
-        item.meta.programLabel,
-        item.meta.course,
-        item.meta.modality,
-        item.meta.lastAccess,
+        item.meta.date || "",
+        item.meta.email || "",
+        item.meta.evaluator || "",
+        item.meta.virtualClassroomName || "",
+        item.meta.programLabel || "",
+        item.meta.course || "",
+        item.meta.siuCode || "",
+        item.meta.modality || "",
         item.totalScore,
         item.status,
-        item.answeredDescriptors,
-        item.applicableDescriptors,
-        item.meta.generalNotes,
-        ...RUBRIC.map((dimension) => {
-          const found = item.dimensions.find((entry) => entry.id === dimension.id);
-          return found?.percent ?? "";
-        })
+        item.digitalization?.level || "",
+        item.digitalization?.endorsement || ""
       ]);
     });
 
     const csv = rows.map((row) => row.map(csvCell).join(",")).join("\n");
-    downloadFile("historial-evaluaciones-aulas-virtuales.csv", csv, "text/csv;charset=utf-8");
+    downloadFile("historial-evaluaciones-aulas.csv", csv, "text/csv;charset=utf-8");
   }
 
   async function copySummary() {
-    const result = calculate(false);
-    if (result.answeredDescriptors === 0) {
-      alert("No hay informe para copiar.");
-      return;
+    const result = calculate(true);
+    const lines = [];
+    lines.push("Informe breve de evaluación de aula virtual");
+    lines.push(`Aula: ${result.meta.virtualClassroomName || result.meta.course || "Sin nombre"}`);
+    lines.push(`Carrera/oferta: ${result.meta.programLabel || "Sin dato"}`);
+    lines.push(`${result.meta.courseLabel || "Cátedra"}: ${result.meta.course || "Sin dato"}`);
+    lines.push(`Código SIU: ${result.meta.siuCode || "Sin dato"}`);
+    lines.push(`Modalidad: ${result.meta.modality || "Sin dato"}`);
+    lines.push(`Fecha: ${result.meta.date || "Sin dato"}`);
+    lines.push(`Puntaje global: ${result.totalScore}/100`);
+    lines.push(`Estado: ${result.status}`);
+    if (result.digitalization) {
+      lines.push(`Nivel de digitalización: ${result.digitalization.level}/6 - ${result.digitalization.text}`);
+      lines.push(`Aval orientativo: ${result.digitalization.endorsement}`);
     }
-
-    const lines = [
-      APP_CONFIG.siteName,
-      "",
-      `Evaluador/a: ${result.meta.evaluator || "—"}`,
-      `Fecha: ${formatDate(result.meta.date)}`,
-      `Oferta: ${result.meta.programLabel || "—"}`,
-      `${result.meta.courseLabel || "Cátedra"}: ${result.meta.course || "—"}`,
-      `Modalidad: ${result.meta.modality || "—"}`,
-      result.meta.lastAccess ? `Último acceso / revisión del aula: ${formatDate(result.meta.lastAccess)}` : "",
-      "",
-      `Resultado: ${result.totalScore}/100 · ${result.status}`,
-      `Descriptores respondidos: ${result.answeredDescriptors}/${result.totalDescriptors}`,
-      "",
-      "Síntesis:",
-      summaryText(result),
-      "",
-      "Puntajes por dimensión:",
-      ...result.dimensions.map((dimension) => `- ${dimension.number}. ${dimension.title}: ${dimension.percent === null ? "—" : `${dimension.percent}/100`} (${dimension.answered}/${dimension.totalItems} respondidos, ${dimension.notApplicable} NA)`),
-      "",
-      "Prioridades de mejora:",
-      ...(result.priorities.length ? result.priorities.map((item) => `- ${item.title}: ${item.percent === null ? "sin datos" : `${item.percent}/100`}. ${item.recommendation}`) : ["- No se detectan prioridades críticas inmediatas."])
-    ].filter(Boolean).join("\n");
+    lines.push("Prioridades de mejora:");
+    result.priorities.forEach((priority, index) => lines.push(`${index + 1}. ${priority}`));
 
     try {
-      await navigator.clipboard.writeText(lines);
-      alert("Informe copiado al portapapeles.");
-    } catch {
-      alert("No se pudo copiar automáticamente. Usá imprimir/guardar PDF o exportar JSON.");
+      await navigator.clipboard.writeText(lines.join("\n"));
+      notify("Informe breve copiado al portapapeles.");
+    } catch (error) {
+      console.warn(error);
+      alert(lines.join("\n"));
     }
   }
 
-  function updateCounters() {
-    const dimensions = collectDimensions();
-    const answered = dimensions.reduce((sum, dimension) => sum + dimension.answered, 0);
-    $("#answeredCount").textContent = String(answered);
-    $("#totalCount").textContent = String(totalDescriptors());
+  function downloadFile(filename, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   }
 
-  function getHistory() {
-    try {
-      return JSON.parse(localStorage.getItem(APP_CONFIG.storageKey) || "[]");
-    } catch {
-      return [];
-    }
+  function notify(message) {
+    const existing = $(".toast");
+    if (existing) existing.remove();
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2600);
   }
 
-  function inputName(dimensionId, code) {
-    return `score-${dimensionId}-${code.replace(/\./g, "-")}`;
+  function setValue(selector, value) {
+    const el = $(selector);
+    if (el) el.value = value;
   }
 
-  function totalDescriptors() {
-    return RUBRIC.reduce((sum, dimension) => sum + dimension.items.length, 0);
+  function inputName(sectionId, criterionId) {
+    return `criterion-${sectionId}-${criterionId}`;
   }
 
-  function round(value, decimals = 2) {
-    const factor = 10 ** decimals;
-    return Math.round(value * factor) / factor;
+  function scoreClass(score) {
+    if (score >= APP_CONFIG.thresholds.approved) return "approved";
+    if (score >= APP_CONFIG.thresholds.conditional) return "conditional";
+    return "critical";
   }
 
   function createId() {
     return `eval-${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
-  function formatDate(value) {
-    if (!value) return "—";
-    const [year, month, day] = value.split("-");
-    return year && month && day ? `${day}/${month}/${year}` : value;
-  }
-
   function safeFileName(value) {
-    return value.toLowerCase()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "evaluacion";
+    return String(value || "archivo")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9-_]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .toLowerCase()
+      .slice(0, 80) || "archivo";
   }
 
   function csvCell(value) {
     const text = String(value ?? "");
     return `"${text.replace(/"/g, '""')}"`;
-  }
-
-  function downloadFile(fileName, content, mime) {
-    const blob = new Blob([content], { type: mime });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
   }
 
   function escapeHtml(value) {

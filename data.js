@@ -2,34 +2,65 @@
   Plataforma de evaluación de aulas virtuales en Moodle
   Facultad de Derecho · UNCUYO
 
-  Esta versión incorpora la grilla por descriptores del instrumento institucional:
-  escala 1 Nada, 2 Poco, 3 Neutro, 4 Mucho, 5 Totalmente, NA No aplica.
+  Versión 4: instrumento ampliado a partir de la transcripción del Formulario Evaluación FCE.
+  Integra identificación del aula, aspectos observables, escala 1-6 por bloques,
+  COIL/internacionalización y nivel de digitalización.
 */
 
 window.APP_CONFIG = {
-  institutionName: "Facultad de Derecho de la UNCUYO",
-  siteName: "Plataforma de evaluación de aulas virtuales en Moodle de la Facultad de Derecho de la UNCUYO",
-  storageKey: "evaluaciones-aulas-virtuales-derecho-uncuyo-v3",
-  thresholds: {
-    approved: 70,
-    conditional: 55,
-    dimensionCritical: 50,
-    accessibilityMinimum: 50
+  "institutionName": "Facultad de Derecho de la UNCUYO",
+  "siteName": "Plataforma de evaluación de aulas virtuales en Moodle de la Facultad de Derecho de la UNCUYO",
+  "storageKey": "evaluaciones-aulas-virtuales-derecho-uncuyo-v4",
+  "thresholds": {
+    "approved": 70,
+    "conditional": 55,
+    "sectionCritical": 50,
+    "accessibilityMinimum": 50
   },
-  scale: [
-    { value: "1", label: "Nada", help: "No se observa cumplimiento del descriptor." },
-    { value: "2", label: "Poco", help: "Cumplimiento incipiente, parcial o débil." },
-    { value: "3", label: "Neutro", help: "Cumplimiento medio, aceptable pero no consolidado." },
-    { value: "4", label: "Mucho", help: "Cumplimiento alto y consistente." },
-    { value: "5", label: "Totalmente", help: "Cumplimiento pleno, claro y verificable." },
-    { value: "NA", label: "NA", help: "No aplica al aula evaluada; no suma ni resta." }
+  "scale": [
+    {
+      "value": "1",
+      "label": "1 · Inicial",
+      "shortLabel": "1",
+      "help": "Ausente, repositorio mínimo o uso sin mediación pedagógica verificable."
+    },
+    {
+      "value": "2",
+      "label": "2 · Básico",
+      "shortLabel": "2",
+      "help": "Presencia parcial o uso instrumental, con organización todavía débil."
+    },
+    {
+      "value": "3",
+      "label": "3 · Organizado",
+      "shortLabel": "3",
+      "help": "Cumplimiento aceptable, con criterios explícitos y cierta organización didáctica."
+    },
+    {
+      "value": "4",
+      "label": "4 · Personalizado",
+      "shortLabel": "4",
+      "help": "Uso consistente, mediado y articulado con la propuesta pedagógica."
+    },
+    {
+      "value": "5",
+      "label": "5 · Avanzado",
+      "shortLabel": "5",
+      "help": "Aula multimodal, interactiva, con seguimiento, retroalimentación y accesibilidad atendida."
+    },
+    {
+      "value": "6",
+      "label": "6 · Innovador",
+      "shortLabel": "6",
+      "help": "Trayecto altamente personalizado, integrado con tecnologías emergentes, redes, IA, COIL o validación de comunidad."
+    }
   ],
-  programs: {
-    abogacia: {
-      label: "Abogacía",
-      courseLabel: "Cátedra",
-      placeholder: "-- Seleccionar cátedra --",
-      courses: [
+  "programs": {
+    "abogacia": {
+      "label": "Abogacía",
+      "courseLabel": "Cátedra",
+      "placeholder": "-- Seleccionar cátedra --",
+      "courses": [
         "Introducción a la Filosofía",
         "Problemática del Conocimiento",
         "Introducción al Derecho",
@@ -109,11 +140,11 @@ window.APP_CONFIG = {
         "Derecho Notarial y Registral"
       ]
     },
-    tecnicatura: {
-      label: "Tecnicatura Universitaria en Administración de Edificios de Propiedad Horizontal y Conjuntos Inmobiliarios",
-      courseLabel: "Cátedra",
-      placeholder: "-- Seleccionar cátedra --",
-      courses: [
+    "tecnicatura": {
+      "label": "Tecnicatura Universitaria en Administración de Edificios de Propiedad Horizontal y Conjuntos Inmobiliarios",
+      "courseLabel": "Cátedra",
+      "placeholder": "-- Seleccionar cátedra --",
+      "courses": [
         "Introducción a la Comunicación",
         "Ética Profesional",
         "Inglés I",
@@ -147,11 +178,11 @@ window.APP_CONFIG = {
         "Proyecto Final"
       ]
     },
-    posgrado: {
-      label: "Oferta de posgrado",
-      courseLabel: "Oferta de posgrado",
-      placeholder: "-- Seleccionar oferta de posgrado --",
-      courses: [
+    "posgrado": {
+      "label": "Oferta de posgrado",
+      "courseLabel": "Oferta de posgrado",
+      "placeholder": "-- Seleccionar oferta de posgrado --",
+      "courses": [
         "Doctorado en Derecho",
         "Maestría en Derecho de las Familias",
         "Maestría en Magistratura y Gestión Judicial",
@@ -167,132 +198,348 @@ window.APP_CONFIG = {
   }
 };
 
-window.RUBRIC = [
+window.EVALUATION_MODEL = [
   {
-    id: "objetivos",
-    number: "1",
-    title: "Objetivos, competencias y coherencia didáctica",
-    description: "Revisa si el aula explicita la propuesta pedagógica, los objetivos/competencias y la organización temporal, y si existe alineación entre esos elementos.",
-    items: [
-      { code: "1.1", text: "En el inicio del aula virtual se comparte un programa, guía didáctica u hoja de ruta con la propuesta pedagógica." },
-      { code: "1.2", text: "Los objetivos de aprendizaje o competencias se expresan con claridad y están escritos desde la perspectiva de los estudiantes." },
-      { code: "1.3", text: "Se indica el tiempo estimado de aprendizaje y/u organización temporal, incluyendo la modalidad de cursado presencial y/o virtual." },
-      { code: "1.4", text: "Existe coherencia o alineación entre objetivos/competencias, actividades, evaluación y recursos digitales utilizados." }
+    "id": "presentacion",
+    "number": "1",
+    "title": "Presentación y visión general del curso",
+    "weight": 18,
+    "description": "Observa el bloque inicial del aula virtual, la presentación del espacio curricular y la explicitación de la propuesta pedagógica.",
+    "observablesLabel": "Aspectos observables que NO están presentes en el bloque inicial",
+    "observables": [
+      "Programa",
+      "Cronograma",
+      "Horarios de clase y de consulta",
+      "Equipo de cátedra",
+      "Imagen de portada",
+      "Fundamentación",
+      "Aportes al perfil de egreso",
+      "Expectativas de logros",
+      "Contenidos",
+      "Propuesta metodológica presencial y virtual",
+      "Propuesta de evaluación presencial y virtual",
+      "Propuesta COIL",
+      "Competencias digitales"
+    ],
+    "criteria": [
+      {
+        "id": "bibliografia_presentacion",
+        "title": "Presentación de bibliografía y webgrafía",
+        "prompt": "Evalúa cómo se presenta la bibliografía, webgrafía y recursos en el programa y en el aula virtual.",
+        "levels": {
+          "1": "No hay indicación clara de bibliografía/webgrafía en programa ni aula virtual.",
+          "2": "La bibliografía aparece sólo listada en el programa, con acceso parcial o poco claro.",
+          "3": "La bibliografía está indicada en el programa y cargada o enlazada en el aula virtual.",
+          "4": "Los materiales se alojan en carpetas Moodle o nube institucional, con acceso ordenado.",
+          "5": "Incluye enlaces a recursos multimodales, repositorios abiertos o recursos institucionales.",
+          "6": "La bibliografía y webgrafía se articulan con un recorrido didáctico claro, multimodal y actualizado."
+        }
+      },
+      {
+        "id": "bibliografia_organizacion",
+        "title": "Organización y derechos de autor",
+        "prompt": "Evalúa identificación, denominación accesible, organización de PDF/enlaces y respeto de derechos de autor.",
+        "levels": {
+          "1": "Materiales dispersos, sin organización ni identificación suficiente.",
+          "2": "Listado básico, con nombres poco claros o sin criterios de organización.",
+          "3": "Organización en aula con PDF y enlaces identificables por unidad o tema.",
+          "4": "Denominación accesible, carpetas o secciones ordenadas y enlaces funcionales.",
+          "5": "Uso preferente de enlaces URL/hipertextuales y referencias respetuosas de autoría.",
+          "6": "Curaduría clara, accesible, legalmente cuidada y articulada con repositorios abiertos/institucionales."
+        }
+      }
+    ],
+    "resourceChecklist": {
+      "title": "Recursos incluidos",
+      "items": [
+        "Listado de bibliografía",
+        "Listado de webgrafía",
+        "URL de bibliografía",
+        "PDF",
+        "Carpeta Drive",
+        "Enlaces a YouTube",
+        "YouTube institucional",
+        "Repositorios institucionales"
+      ]
+    }
+  },
+  {
+    "id": "interaccion_tutoria",
+    "number": "2",
+    "title": "Interacción y tutoría",
+    "weight": 14,
+    "description": "Releva recursos de comunicación, interacción, seguimiento académico y acompañamiento motivacional.",
+    "observablesLabel": "Recursos de interacción que NO están presentes",
+    "observables": [
+      "Foros de la plantilla inicial sin modificar",
+      "Calendario",
+      "Avisos con descripción de uso",
+      "Salas de chat de Moodle",
+      "Plataformas de videoconferencias",
+      "Redes sociales",
+      "Redes de especialistas",
+      "IA o agentes conversacionales"
+    ],
+    "criteria": [
+      {
+        "id": "recursos_interaccion",
+        "title": "Recursos de interacción",
+        "prompt": "Evalúa la disponibilidad y mediación de foros, calendario, avisos, chats, videoconferencias, comunidades y redes.",
+        "levels": {
+          "1": "Sólo hay foros de plantilla inicial o canales sin uso claro.",
+          "2": "Calendario o avisos disponibles, pero con descripción o actualización limitada.",
+          "3": "Foro de consultas y avisos organizados para comunicación regular.",
+          "4": "Uso articulado de Moodle y plataformas de comunidad o videoconferencia.",
+          "5": "Interacción sostenida con redes sociales/académicas o espacios de comunidad definidos.",
+          "6": "Integra redes de especialistas o agentes IA con sentido pedagógico y acompañamiento verificable."
+        }
+      },
+      {
+        "id": "tutoria_comunicacion",
+        "title": "Tutoría y naturaleza de la comunicación",
+        "prompt": "Evalúa la asiduidad, orientación, personalización y sistematicidad del acompañamiento docente.",
+        "levels": {
+          "1": "Comunicación ocasional o reactiva, sin criterios de seguimiento.",
+          "2": "Comunicación básica mediante novedades o consultas, sin cronograma explícito.",
+          "3": "Comunicación sistemática según cronograma, con canales identificados.",
+          "4": "Acompañamiento motivacional y académico con foros de uso específico o FAQ.",
+          "5": "Seguimiento gestionado con rúbricas, retroalimentación y orientación diferenciada.",
+          "6": "Tutoría personalizada y/o asistida digitalmente, con IA o agentes bajo criterios pedagógicos y éticos."
+        }
+      }
+    ],
+    "resourceChecklist": {
+      "title": "Aspectos observables de tutoría presentes",
+      "items": [
+        "Foro de Novedades",
+        "Foro de consultas",
+        "Foros de uso específico",
+        "Rúbricas en actividades",
+        "Preguntas frecuentes",
+        "IA/agentes de apoyo"
+      ]
+    }
+  },
+  {
+    "id": "recursos",
+    "number": "3",
+    "title": "Recursos",
+    "weight": 14,
+    "description": "Evalúa tipo, origen, curaduría, multimodalidad, configuración y acceso a los contenidos digitales.",
+    "observablesLabel": "Recursos que NO están presentes",
+    "observables": [
+      "Etiquetas",
+      "Imágenes",
+      "Audios",
+      "Videos",
+      "PPT",
+      "Genially",
+      "Canva",
+      "Iconografía"
+    ],
+    "criteria": [
+      {
+        "id": "tipo_recursos",
+        "title": "Tipo y curaduría de recursos",
+        "prompt": "Evalúa si los recursos son de plantilla, de internet, propios, multimodales, interactivos o emergentes.",
+        "levels": {
+          "1": "Predominan recursos de plantilla base, sin curaduría ni mediación suficiente.",
+          "2": "Se utilizan recursos de internet sin modificar o con escasa contextualización.",
+          "3": "Hay recursos de internet adaptados o modificados para el curso.",
+          "4": "Se combinan recursos de internet con recursos propios multimodales.",
+          "5": "Se integran recursos propios e interactivos con sentido didáctico.",
+          "6": "Se producen recursos propios con tecnologías emergentes vinculadas al ámbito profesional."
+        }
+      },
+      {
+        "id": "configuracion_acceso",
+        "title": "Configuración y acceso",
+        "prompt": "Evalúa cómo se accede a los recursos: URL, pestañas, etiquetas, hipertexto, embebidos y mediación.",
+        "levels": {
+          "1": "Acceso disperso o poco claro; recursos subidos sin mediación.",
+          "2": "Acceso mediante URL listadas, con organización mínima.",
+          "3": "Uso de URL o pestañas emergentes con indicaciones básicas.",
+          "4": "Etiquetas y secciones organizan el recorrido de lectura y consulta.",
+          "5": "Hipertexto mediado y recursos embebidos que reducen barreras de acceso.",
+          "6": "Ecosistema de recursos integrado, accesible, interactivo y contextualizado profesionalmente."
+        }
+      }
     ]
   },
   {
-    id: "evaluacion",
-    number: "2",
-    title: "Evaluación",
-    description: "Analiza la relación entre propuesta curricular, criterios, instrumentos de evaluación y formas de retroalimentación.",
-    items: [
-      { code: "2.1", text: "Hay coherencia entre el formato curricular, la propuesta de evaluación y el desarrollo de contenidos/actividades a lo largo del cursado." },
-      { code: "2.2", text: "Se establecen claramente los criterios de evaluación de las actividades propuestas y las formas de retroalimentación." },
-      { code: "2.3", text: "Se proponen diferentes instrumentos de evaluación, por ejemplo cuestionarios, portafolios, producciones u otros." }
+    "id": "actividades_evaluacion",
+    "number": "4",
+    "title": "Actividades y evaluación",
+    "weight": 18,
+    "description": "Identifica herramientas de seguimiento, entrega, evaluación, retroalimentación y trabajo colaborativo.",
+    "observablesLabel": "Herramientas de evaluación que NO están presentes",
+    "observables": [
+      "Calificador",
+      "Tarea",
+      "Cuestionario",
+      "Foro",
+      "Wiki",
+      "Glosario",
+      "Recursos externos",
+      "IA/agentes"
+    ],
+    "criteria": [
+      {
+        "id": "recursos_evaluacion",
+        "title": "Recursos de evaluación",
+        "prompt": "Evalúa la integración de herramientas Moodle, externas y emergentes para entrega, seguimiento y evaluación.",
+        "levels": {
+          "1": "Instancias de entrega o seguimiento aisladas, sin criterios claros.",
+          "2": "Uso de herramientas externas básicas, como Drive o correo, sin integración suficiente.",
+          "3": "Uso de herramientas Moodle como tarea y calificador con funcionamiento claro.",
+          "4": "Combinación pertinente de Moodle y herramientas externas.",
+          "5": "Uso de recursos específicos como Kahoot!, Socrative, EdPuzzle o Google Forms con sentido evaluativo.",
+          "6": "Evaluación integrada con tecnologías emergentes, analítica, IA o retroalimentación avanzada."
+        }
+      },
+      {
+        "id": "colaboracion",
+        "title": "Colaboración entre estudiantes",
+        "prompt": "Evalúa si las herramientas propician producción colaborativa, interacción entre pares y validación comunitaria.",
+        "levels": {
+          "1": "No se observan actividades colaborativas.",
+          "2": "Hay interacción mínima, no necesariamente orientada a producción colectiva.",
+          "3": "Se utilizan foros, wikis, glosarios o lecciones para colaborar en Moodle.",
+          "4": "Se combinan herramientas Moodle con Google Docs, Padlet u otras herramientas colaborativas.",
+          "5": "Las actividades colaborativas tienen consignas, criterios y retroalimentación claros.",
+          "6": "La producción colaborativa se valida con comunidad, especialistas o redes externas."
+        }
+      }
+    ],
+    "resourceChecklist": {
+      "title": "Herramientas colaborativas observadas",
+      "items": [
+        "Foro",
+        "Wiki",
+        "Glosario",
+        "Lección",
+        "Jamboard",
+        "Padlet",
+        "Google Docs",
+        "Herramientas externas"
+      ]
+    }
+  },
+  {
+    "id": "diseno_accesibilidad",
+    "number": "5",
+    "title": "Diseño instruccional y accesibilidad",
+    "weight": 18,
+    "gate": true,
+    "description": "Evalúa mediación didáctica, organización visual, navegación, accesibilidad y condiciones de inclusión.",
+    "observablesLabel": "Aspectos de accesibilidad/diseño que NO están presentes",
+    "observables": [
+      "Accesibilidad desde diversos dispositivos",
+      "Navegación sencilla con mínimos clics",
+      "Enlaces funcionando",
+      "Organizadores gráficos de tiempo y crédito",
+      "Lenguajes apropiados",
+      "Personalización para aprendizaje autónomo",
+      "Recursos para personas con discapacidad"
+    ],
+    "criteria": [
+      {
+        "id": "organizacion_mediacion",
+        "title": "Organización y mediación",
+        "prompt": "Evalúa bloques, etiquetas, infografías, secuencia didáctica y uso de herramientas externas de mediación.",
+        "levels": {
+          "1": "No hay mediación visible; el aula funciona como depósito de materiales.",
+          "2": "Organización básica por bloques o etiquetas, con mediación limitada.",
+          "3": "Bloques y etiquetas ordenan el recorrido y orientan la navegación.",
+          "4": "Se incorporan infografías u organizadores visuales coherentes con la secuencia didáctica.",
+          "5": "Uso de Genially, Canva u otros recursos externos para mediación visual y conceptual.",
+          "6": "Secuencia didáctica accesible, mediada y vinculada a repositorios digitales abiertos o recursos innovadores."
+        }
+      },
+      {
+        "id": "accesibilidad",
+        "title": "Accesibilidad e inclusión",
+        "prompt": "Evalúa navegación, dispositivos, enlaces, lenguajes, autonomía y asistencia a personas con discapacidad.",
+        "levels": {
+          "1": "Presenta barreras importantes de acceso, navegación o comprensión.",
+          "2": "Cumple aspectos mínimos, pero sin revisión sistemática de accesibilidad.",
+          "3": "Navegación simple, enlaces funcionales y lenguajes relativamente claros.",
+          "4": "Considera dispositivos diversos, tiempos, carga de trabajo y organizadores de cursado.",
+          "5": "Incluye recursos accesibles y apoyos para aprendizaje autónomo y necesidades diversas.",
+          "6": "Diseño inclusivo robusto, con personalización y asistencia específica a personas con discapacidad."
+        }
+      }
+    ],
+    "resourceChecklist": {
+      "title": "Elementos de organización presentes",
+      "items": [
+        "Bloques",
+        "Etiquetas",
+        "Infografías",
+        "Organizadores temporales",
+        "Recursos accesibles",
+        "Secuencia didáctica explícita"
+      ]
+    }
+  },
+  {
+    "id": "coil",
+    "number": "6",
+    "title": "Internacionalización y nacionalización del currículum / COIL",
+    "weight": 8,
+    "optionalToggle": true,
+    "description": "Registra si el aula incorpora experiencias de colaboración internacional en línea, nacionalización del currículum o Global Classroom.",
+    "observablesLabel": "Elementos COIL o de internacionalización que NO están presentes",
+    "observables": [
+      "Denominación de la propuesta",
+      "Carrera o espacio curricular involucrado",
+      "Instituciones participantes",
+      "Responsables y roles",
+      "Carga horaria",
+      "Cronograma",
+      "Metodología de evaluación",
+      "Problemática profesional compartida",
+      "Objetivos/capacidades a desarrollar",
+      "Herramientas de colaboración digital",
+      "Aportes al perfil de egreso",
+      "Insignias o créditos"
+    ],
+    "criteria": [
+      {
+        "id": "propuesta_coil",
+        "title": "Coherencia de la propuesta COIL / Global Classroom",
+        "prompt": "Evalúa coordinación, objetivos, roles, metodología, colaboración digital y aporte al perfil de egreso.",
+        "levels": {
+          "1": "No contiene los elementos mínimos para reconocer una propuesta COIL o de internacionalización.",
+          "2": "Menciona una intención de internacionalización, pero sin estructura operativa clara.",
+          "3": "Define denominación, responsables, cronograma y herramientas básicas.",
+          "4": "Articula objetivos, capacidades, metodología y evaluación con instituciones participantes.",
+          "5": "Incluye colaboración digital efectiva, roles claros y aportes al perfil de egreso.",
+          "6": "Propuesta coherente, coordinada, evaluable y reconocible mediante créditos, insignias o validación institucional."
+        }
+      }
     ]
   },
   {
-    id: "tecnologias",
-    number: "3",
-    title: "Tecnologías digitales",
-    description: "Revisa la pertinencia de las herramientas digitales para sostener objetivos, participación, comunicación y colaboración.",
-    items: [
-      { code: "3.1", text: "Las tecnologías digitales utilizadas en el curso son pertinentes y funcionales a los objetivos de aprendizaje o competencias." },
-      { code: "3.2", text: "Las tecnologías digitales utilizadas apoyan la participación de los estudiantes y el aprendizaje activo." },
-      { code: "3.3", text: "Se utilizan recursos digitales que favorecen la comunicación." },
-      { code: "3.4", text: "Se utilizan recursos digitales que favorecen el trabajo colaborativo." }
-    ]
-  },
-  {
-    id: "usabilidad",
-    number: "4",
-    title: "Usabilidad",
-    description: "Evalúa si el aula resulta navegable, clara, estable y sin obstáculos innecesarios para encontrar contenidos y actividades.",
-    items: [
-      { code: "4.1", text: "Es fácil navegar y se encuentran rápidamente los contenidos buscados." },
-      { code: "4.2", text: "La interfaz cuenta con un diseño implícito que informa cómo interactuar, o existen instrucciones de uso claras." },
-      { code: "4.3", text: "Todos los enlaces funcionan correctamente; no hay enlaces rotos o que conduzcan a contenido erróneo." },
-      { code: "4.4", text: "La navegación es sencilla, con mínimo número de clics y de efectos distractores." }
-    ]
-  },
-  {
-    id: "mediacion_materiales",
-    number: "5",
-    title: "Mediación de materiales",
-    description: "Observa claridad, atractivo, completitud de consignas y respeto de propiedad intelectual en los materiales disponibles.",
-    items: [
-      { code: "5.1", text: "La presentación del contenido es clara; se localizan rápidamente los apartados e ideas que se exponen." },
-      { code: "5.2", text: "Los contenidos se presentan de forma atractiva o innovadora, por ejemplo infografías, audios, videos u otros recursos." },
-      { code: "5.3", text: "Las consignas están bien formuladas y permiten responder qué, para qué, cómo, con qué, quiénes, dónde y cuándo." },
-      { code: "5.4", text: "El contenido respeta los derechos de propiedad intelectual cuando utiliza otras fuentes." }
-    ]
-  },
-  {
-    id: "reflexion_innovacion",
-    number: "6",
-    title: "Capacidad de generar reflexión, crítica e innovación",
-    description: "Revisa si las actividades promueven aprendizaje significativo, comprensión, colaboración, producción, metodologías activas y pensamiento crítico.",
-    items: [
-      { code: "6.1", text: "Se promueve el aprendizaje significativo: es clara la relación entre lo ya aprendido y los nuevos conocimientos." },
-      { code: "6.2", text: "Se proponen actividades para el acceso y comprensión de la información, como lectura, búsqueda o exploración guiada." },
-      { code: "6.3", text: "Se proponen actividades para construir colaborativamente." },
-      { code: "6.4", text: "Se proponen actividades que permiten visualizar o expresar lo comprendido mediante producción y publicación de información." },
-      { code: "6.5", text: "Se proponen metodologías activas, como resolución de proyectos, problemas, casos o ejercicios." },
-      { code: "6.6", text: "Las actividades estimulan la reflexión, la capacidad crítica y la creación de nuevas ideas, procedimientos, métodos o técnicas." }
-    ]
-  },
-  {
-    id: "interactividad_adaptabilidad",
-    number: "7",
-    title: "Interactividad y adaptabilidad",
-    description: "Evalúa si el contenido y las actividades ofrecen interacción, alternativas o recorridos diferenciados según acciones, niveles o posibilidades de cursado.",
-    items: [
-      { code: "7.1", text: "La presentación del contenido no es estática, sino que depende del uso que haga el estudiante." },
-      { code: "7.2", text: "Se proponen diferentes actividades o itinerarios según niveles de conocimiento, posibilidades de cursado o capacidades de aprendizaje." },
-      { code: "7.3", text: "El aula facilita que el estudiante controle y maneje su aprendizaje, eligiendo contenido o actividad siguiente según su respuesta o recorrido previo." }
-    ]
-  },
-  {
-    id: "autonomia",
-    number: "8",
-    title: "Promoción del aprendizaje autónomo",
-    description: "Revisa si la claridad de la propuesta favorece el trabajo autónomo y su vinculación con el entorno profesional o social.",
-    items: [
-      { code: "8.1", text: "La claridad de la propuesta facilita el trabajo autónomo por parte del estudiante." },
-      { code: "8.2", text: "Existe relación entre lo aprendido y el entorno profesional y/o social de los estudiantes." }
-    ]
-  },
-  {
-    id: "formato_diseno",
-    number: "9",
-    title: "Formato y diseño",
-    description: "Evalúa variedad de formatos, adecuación estética y calidad de textos, imágenes y audios.",
-    items: [
-      { code: "9.1", text: "Se utilizan formatos multimodales —texto, imagen, audio, video— para aprovechar diferentes formas de aprendizaje." },
-      { code: "9.2", text: "El aula es estéticamente adecuada para el estudio y la reflexión; no tiene exceso de colores, audios o videos que distraigan." },
-      { code: "9.3", text: "Los textos, imágenes y audios son de buena calidad." }
-    ]
-  },
-  {
-    id: "accesibilidad",
-    number: "10",
-    title: "Accesibilidad",
-    gate: true,
-    description: "Dimensión de atención prioritaria: observa adaptación a personas con discapacidad, accesibilidad web y accesibilidad de contenidos multimedia.",
-    items: [
-      { code: "10.1", text: "El material está adaptado a personas con discapacidad visual, auditiva o motora." },
-      { code: "10.2", text: "Cumple criterios de accesibilidad web y criterios de accesibilidad de contenidos multimedia." },
-      { code: "10.3", text: "El curso proporciona textos e imágenes accesibles en archivos, documentos, páginas LMS y páginas web para diversos estudiantes." }
-    ]
-  },
-  {
-    id: "tutoria",
-    number: "11",
-    title: "Tutoría",
-    description: "Revisa si existe seguimiento académico y motivacional, y si están claros horarios y modos de contacto con el equipo docente.",
-    items: [
-      { code: "11.1", text: "Se elabora un plan de acción tutorial para realizar el seguimiento académico y motivacional del trabajo individual y grupal." },
-      { code: "11.2", text: "Se establecen los horarios y modos de contacto con el profesor o equipo docente a través de diferentes canales de comunicación." }
+    "id": "observaciones_generales",
+    "number": "7",
+    "title": "Observaciones generales y nivel de digitalización",
+    "weight": 10,
+    "description": "Mirada holística del aula virtual según digitalización, personalización y condiciones para otorgar aval académico.",
+    "criteria": [
+      {
+        "id": "nivel_digitalizacion",
+        "title": "Nivel de digitalización y personalización",
+        "prompt": "Selecciona el nivel que mejor describe el aula evaluada.",
+        "levels": {
+          "1": "Repositorio: menos de 25% de digitalización. Sin aval académico.",
+          "2": "Digitalización parcial: 25% a 40%. Aval con observaciones.",
+          "3": "Trayecto parcialmente personalizado: 40% a 59%. Otorga aval.",
+          "4": "Trayecto mayormente personalizado: 60% a 79%. Otorga aval.",
+          "5": "Trayecto completamente personalizado: 80% a 100%, con barra de progreso.",
+          "6": "Trayectos personalizados específicos: 100% de digitalización, por ejemplo PEUCE, PROGRESA o NIC."
+        }
+      }
     ]
   }
 ];
